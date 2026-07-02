@@ -12,7 +12,7 @@
 
 ```bash
 # Клонировать репозиторий
-git clone <repo-url>
+git clone https://github.com/Evgeni77q/heroes-online.git
 cd heroes-online
 
 # Скопировать переменные окружения

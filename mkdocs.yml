@@ -2,8 +2,8 @@ site_name: Heroes Online
 site_description: Документация проекта Heroes Online
 site_author: Heroes Online Team
 
-repo_name: heroes-online
-# repo_url: https://github.com/<org>/heroes-online  # раскомментировать после публикации репозитория
+repo_name: Evgeni77q/heroes-online
+repo_url: https://github.com/Evgeni77q/heroes-online
 
 docs_dir: docs
 site_dir: site

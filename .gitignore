@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Build
+dist/
+build/
+out/
+target/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Coverage & test artifacts
+coverage/
+.nyc_output/
+*.lcov
+
+# MkDocs
+site/
+
+# Secrets
+*.pem
+*.key
+credentials.json

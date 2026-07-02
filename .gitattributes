@@ -1,0 +1,67 @@
+# Auto detect text files and normalize line endings to LF
+* text=auto eol=lf
+
+# Source code
+*.c     text diff=c
+*.h     text diff=c
+*.cpp   text diff=cpp
+*.hpp   text diff=cpp
+*.cs    text diff=csharp
+*.go    text diff=golang
+*.java  text diff=java
+*.js    text
+*.jsx   text
+*.ts    text
+*.tsx   text
+*.py    text diff=python
+*.rs    text diff=rust
+*.sql   text
+*.sh    text eol=lf
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# Documentation
+*.md    text diff=markdown
+*.yml   text
+*.yaml  text
+*.json  text
+*.toml  text
+
+# Config
+.env.example    text
+.editorconfig   text
+.gitattributes  text
+.gitignore      text
+
+# Graphics (binary)
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.webp  binary
+*.svg   text
+*.psd   binary
+
+# Audio (binary)
+*.mp3   binary
+*.ogg   binary
+*.wav   binary
+
+# Archives (binary)
+*.zip   binary
+*.gz    binary
+*.tar   binary
+*.7z    binary
+
+# Fonts (binary)
+*.woff    binary
+*.woff2   binary
+*.ttf     binary
+*.eot     binary
+
+# Linguist: exclude generated/vendor from language stats
+site/           linguist-generated=true
+node_modules/   linguist-vendored=true
+vendor/         linguist-vendored=true

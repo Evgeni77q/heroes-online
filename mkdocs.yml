@@ -1,0 +1,67 @@
+site_name: Heroes Online
+site_description: Документация проекта Heroes Online
+site_author: Heroes Online Team
+
+repo_name: heroes-online
+# repo_url: https://github.com/<org>/heroes-online  # раскомментировать после публикации репозитория
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: ru
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Тёмная тема
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Светлая тема
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - toc.follow
+
+plugins:
+  - search:
+      lang: ru
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Главная: README.md
+  - 00 — Проект: 00_Project/index.md
+  - 01 — Геймдизайн: 01_GameDesign/index.md
+  - 02 — Архитектура: 02_Architecture/index.md
+  - 03 — База данных: 03_Database/index.md
+  - 04 — API: 04_API/index.md
+  - 05 — Backend: 05_Backend/index.md
+  - 06 — Frontend: 06_Frontend/index.md
+  - 07 — UI: 07_UI/index.md
+  - 08 — Тестирование: 08_Testing/index.md
+  - 09 — Деплой: 09_Deployment/index.md
+  - 10 — Баланс: 10_Balance/index.md
+  - 11 — Лор: 11_Lore/index.md
+  - 12 — Art Bible: 12_ArtBible/index.md
+  - 13 — DevLog: 13_DevLog/index.md
+  - 14 — Решения: 14_Decisions/index.md

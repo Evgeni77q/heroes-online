@@ -1,5 +1,7 @@
 # Dependencies
 node_modules/
+backend/node_modules/
+backend/dist/
 vendor/
 __pycache__/
 *.pyc

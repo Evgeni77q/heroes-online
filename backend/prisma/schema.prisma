@@ -1,0 +1,237 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AccountStatus {
+  pending_verification
+  active
+  locked
+  suspended
+  deleted
+
+  @@map("account_status")
+}
+
+enum WorldStatus {
+  ACTIVE
+  MAINTENANCE
+  CLOSED
+
+  @@map("world_status")
+}
+
+enum TileType {
+  PLAINS
+  FOREST
+  MOUNTAIN
+  WATER
+  DESERT
+  SWAMP
+
+  @@map("tile_type")
+}
+
+enum ResourceType {
+  WOOD
+  STONE
+  IRON
+  FOOD
+  GOLD
+
+  @@map("resource_type")
+}
+
+enum BuildingType {
+  LUMBER_MILL
+  QUARRY
+  MINE
+  FARM
+  MARKET
+
+  @@map("building_type")
+}
+
+enum UnitType {
+  INFANTRY
+  ARCHER
+  CAVALRY
+
+  @@map("unit_type")
+}
+
+model Account {
+  id                  String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email               String        @db.VarChar(255)
+  username            String        @db.VarChar(24)
+  passwordHash        String        @map("password_hash")
+  status              AccountStatus @default(pending_verification)
+  emailVerified       Boolean       @default(false) @map("email_verified")
+  emailVerifiedAt     DateTime?     @map("email_verified_at") @db.Timestamptz(6)
+  failedLoginAttempts Int           @default(0) @map("failed_login_attempts")
+  lastLoginAt         DateTime?     @map("last_login_at") @db.Timestamptz(6)
+  lastLoginIp         String?       @map("last_login_ip") @db.Inet
+  lockedUntil         DateTime?     @map("locked_until") @db.Timestamptz(6)
+  twoFactorEnabled    Boolean       @default(false) @map("two_factor_enabled")
+  createdAt           DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt           DateTime?     @map("deleted_at") @db.Timestamptz(6)
+
+  players Player[]
+
+  @@map("accounts")
+}
+
+model Player {
+  id        String   @id @default(uuid()) @db.Uuid
+  accountId String   @map("account_id") @db.Uuid
+  name      String
+  worldId   String   @map("world_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  account Account @relation(fields: [accountId], references: [id])
+  world   World   @relation(fields: [worldId], references: [id])
+  cities  City[]
+
+  @@index([accountId])
+  @@index([worldId])
+  @@map("players")
+}
+
+model World {
+  id          String      @id @default(uuid()) @db.Uuid
+  name        String      @db.VarChar(32)
+  description String?
+  status      WorldStatus @default(ACTIVE)
+  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  players Player[]
+  maps    Map[]
+  cities  City[]
+
+  @@index([status])
+  @@map("worlds")
+}
+
+model Map {
+  id        String   @id @default(uuid()) @db.Uuid
+  worldId   String   @map("world_id") @db.Uuid
+  width     Int
+  height    Int
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  world World  @relation(fields: [worldId], references: [id])
+  tiles Tile[]
+  cities City[]
+
+  @@index([worldId])
+  @@map("maps")
+}
+
+model Tile {
+  id        String   @id @default(uuid()) @db.Uuid
+  mapId     String   @map("map_id") @db.Uuid
+  x         Int
+  y         Int
+  type      TileType
+  ownerCityId String?  @map("owner_city_id") @db.Uuid
+  hasCity   Boolean  @default(false) @map("has_city")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  map       Map   @relation(fields: [mapId], references: [id])
+  city      City?
+  ownerCity City? @relation("OwnedTiles", fields: [ownerCityId], references: [id])
+
+  @@unique([mapId, x, y])
+  @@index([mapId])
+  @@index([ownerCityId])
+  @@map("tiles")
+}
+
+model City {
+  id        String   @id @default(uuid()) @db.Uuid
+  playerId  String   @map("player_id") @db.Uuid
+  worldId   String   @map("world_id") @db.Uuid
+  mapId     String   @map("map_id") @db.Uuid
+  tileId    String   @unique @map("tile_id") @db.Uuid
+  name      String   @db.VarChar(24)
+  level     Int      @default(1)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  player Player @relation(fields: [playerId], references: [id])
+  world  World  @relation(fields: [worldId], references: [id])
+  map    Map    @relation(fields: [mapId], references: [id])
+  tile   Tile   @relation(fields: [tileId], references: [id])
+  resources ResourceBalance[]
+  buildings Building[]
+  armies    Army[]
+  ownedTiles Tile[] @relation("OwnedTiles")
+
+  @@index([playerId])
+  @@index([worldId])
+  @@map("cities")
+}
+
+model ResourceBalance {
+  id        String       @id @default(uuid()) @db.Uuid
+  cityId    String       @map("city_id") @db.Uuid
+  type      ResourceType
+  amount    Int          @default(0)
+  updatedAt DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  city City @relation(fields: [cityId], references: [id])
+
+  @@unique([cityId, type])
+  @@index([cityId])
+  @@map("resource_balances")
+}
+
+model Building {
+  id                  String       @id @default(uuid()) @db.Uuid
+  cityId              String       @map("city_id") @db.Uuid
+  type                BuildingType
+  level               Int          @default(1)
+  isUnderConstruction Boolean      @default(false) @map("is_under_construction")
+  finishAt            DateTime?    @map("finish_at") @db.Timestamptz(6)
+  createdAt           DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  city City @relation(fields: [cityId], references: [id])
+
+  @@index([cityId])
+  @@map("buildings")
+}
+
+model Army {
+  id        String   @id @default(uuid()) @db.Uuid
+  cityId    String   @map("city_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  city  City   @relation(fields: [cityId], references: [id])
+  units Unit[]
+
+  @@index([cityId])
+  @@map("armies")
+}
+
+model Unit {
+  id        String   @id @default(uuid()) @db.Uuid
+  armyId    String   @map("army_id") @db.Uuid
+  type      UnitType
+  quantity  Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  army Army @relation(fields: [armyId], references: [id])
+
+  @@unique([armyId, type])
+  @@map("units")
+}

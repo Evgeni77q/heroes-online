@@ -50,7 +50,10 @@ markdown_extensions:
 
 nav:
   - Главная: README.md
-  - 00 — Проект: 00_Project/index.md
+  - 00 — Проект:
+      - Обзор: 00_Project/index.md
+      - 00 Vision: 00_Project/00_Vision.md
+      - 01 Constitution: 00_Project/01_Constitution.md
   - 01 — Геймдизайн: 01_GameDesign/index.md
   - 02 — Архитектура: 02_Architecture/index.md
   - 03 — База данных: 03_Database/index.md

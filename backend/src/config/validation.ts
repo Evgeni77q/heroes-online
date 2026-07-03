@@ -10,4 +10,8 @@ export const validationSchema = Joi.object({
   REDIS_URL: Joi.string().uri().optional(),
   TICK_INTERVAL_MS: Joi.number().integer().positive().default(10_000),
   GAME_LOOP_TICK_MS: Joi.number().integer().positive().default(10_000),
+  ACCOUNT_AUTO_ACTIVATE: Joi.boolean()
+    .truthy('true', '1')
+    .falsy('false', '0')
+    .default(false),
 });

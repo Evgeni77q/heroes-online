@@ -1,5 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
+import { appConfig, validationSchema } from './config';
 import { AccountModule } from './account/account.module';
 import { AuthModule } from './auth/auth.module';
 import { ArmyModule } from './army/army.module';
@@ -19,6 +21,15 @@ import { WorldModule } from './world/world.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [appConfig],
+      validationSchema,
+      validationOptions: {
+        allowUnknown: true,
+        abortEarly: true,
+      },
+    }),
     PrismaModule,
     AccountModule,
     AuthModule,

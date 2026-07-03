@@ -1,4 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ArmyProcessor } from '../processors/army.processor';
 import { BuildingProcessor } from '../processors/building.processor';
 import { ResourceProcessor } from '../processors/resource.processor';
@@ -15,10 +16,11 @@ export class TickEngine implements OnModuleInit {
     private building: BuildingProcessor,
     private army: ArmyProcessor,
     private world: WorldProcessor,
+    private config: ConfigService,
   ) {}
 
   onModuleInit() {
-    const tickMs = Number(process.env.GAME_LOOP_TICK_MS ?? 10_000);
+    const tickMs = this.config.getOrThrow<number>('gameLoopTickMs');
     this.scheduler.start(() => this.tick(), tickMs);
   }
 

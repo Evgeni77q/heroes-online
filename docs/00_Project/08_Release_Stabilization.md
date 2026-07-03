@@ -2,155 +2,119 @@
 
 **Goal:** Verify v0.1.0-alpha readiness — no new features.
 
+See [Alpha Readiness Checklist](09_Alpha_Readiness.md) for the full tag gate.
+
 ---
 
-# 1. E2E Smoke Test (required)
+# 1. Release Gate (standard)
 
-### Quick start for new developers
+If any step fails, the release is **not ready**.
+
+```
+Backend startup
+    ↓
+GET /health == 200
+    ↓
+seed:dev
+    ↓
+smoke:e2e
+    ↓
+smoke:resilience
+    ↓
+check-stuck-jobs
+```
+
+```bash
+# backend running with GAME_SMOKE_FAST_BUILD=true
+cd backend
+npm run release:gate
+```
+
+CI runs the same gate on every push/PR to `main` (`.github/workflows/release-gate.yml`).
+
+---
+
+# 2. Quick Start (new developer)
 
 ```bash
 docker compose up -d postgres
 cd backend
 npx prisma db push
 npm run seed:dev
-npm run start:dev
-npm run smoke:e2e
-```
-
-`GET /health` must return `status: "ok"` before running smoke tests.
-
-Run against a live backend with fast build enabled:
-
-```bash
-docker compose up -d postgres
-cd backend
-npx prisma db push
 $env:GAME_LOOP_TICK_MS="1000"
 $env:GAME_SMOKE_FAST_BUILD="true"
 $env:ACCOUNT_AUTO_ACTIVATE="true"
 npm run start:dev
+# another terminal:
+npm run release:gate
 ```
-
-In another terminal:
-
-```bash
-cd backend
-npm run smoke:e2e
-```
-
-### Checklist
-
-- [x] Register
-- [x] Auto onboarding
-- [x] Dashboard
-- [x] Resources visible
-- [x] Buildings visible
-- [x] Upgrade → UPGRADING
-- [x] Game Loop completes job
-- [x] `building.updated` via WebSocket
-- [x] Dashboard correct after refresh (F5)
-
-**Do not tag `v0.1.0-alpha` until smoke is green.**
 
 ---
 
-# 2. Resilience Tests
+# 3. E2E Smoke (`smoke:e2e`)
 
-```bash
-npm run smoke:resilience
-```
+- [x] Register → onboarding → dashboard
+- [x] Resources & buildings visible
+- [x] Upgrade → UPGRADING → Game Loop → `building.updated`
+- [x] Dashboard correct after refresh (F5)
+
+---
+
+# 4. Resilience (`smoke:resilience`)
 
 | Scenario | Expected |
 |----------|----------|
-| Duplicate Upgrade | 409 `ALREADY_UPGRADING` |
-| No resources | 422 `INSUFFICIENT_RESOURCES` |
-| Multiple buildings | parallel PENDING jobs |
-| Backend restart | pending RUNNING/PENDING jobs complete on next tick |
+| Duplicate Upgrade | 409 |
+| No resources | 422 or 409 |
+| Multiple buildings | parallel jobs |
+| Backend restart | jobs complete on next tick (manual) |
 
 ---
 
-# 3. Metrics
+# 5. Stuck Jobs (`check-stuck-jobs`)
 
-`GET /api/v1/admin/metrics` → `gameLoop`:
-
-| Field | Meaning |
-|-------|---------|
-| `ticks` | Total game loop ticks |
-| `avgTickDurationMs` | Average tick wall time |
-| `jobsCompleted` | Timed jobs completed |
-| `avgJobCompletionLagMs` | Average delay after `finishAt` |
-| `domainEventsPublished` | Domain events emitted |
+Fails when expired jobs (`finishAt <= now`) remain `PENDING` or `RUNNING`.
 
 ---
 
-# 4. Versioning Policy
+# 6. Metrics
 
-All contracts use explicit `version` where evolution is expected:
-
-| Contract | Version field |
-|----------|---------------|
-| WebSocket events | `version: 1` |
-| Domain events | `version: 1` |
-| REST API | `/api/v1/...` path |
-| View API | evolves with `/api/v1/dashboard` until breaking change |
-
-New breaking shapes → increment version, never mutate v1 in place.
+`GET /api/v1/admin/metrics` → `gameLoop` block.
 
 ---
 
-# 6. Game System Stabilization Rule (post-alpha)
+# 7. Versioning Policy
 
-Every new major game system MUST ship with:
-
-| Artifact | Purpose |
-|----------|---------|
-| Unit tests | Business logic |
-| Integration tests | Repositories / services |
-| E2E smoke | Player scenario |
-| Resilience tests | Conflicts, recovery, edge cases |
-| Metrics | Observable in `/api/v1/admin/metrics` or health |
-| Documentation | User story + API/event contracts |
-
-Same bar as building upgrade (Story 4 + stabilization sprint).
+WebSocket events, domain events, and REST paths use explicit versioning. Breaking changes → new version.
 
 ---
 
-# 7. Health Endpoint
+# 8. Game System Stabilization Rule (post-alpha)
 
-`GET /health` (no `/api` prefix, no auth):
-
-```json
-{
-  "status": "ok",
-  "database": "up",
-  "gameLoop": "running",
-  "realtime": "running",
-  "version": "0.1.0-alpha"
-}
-```
-
-Returns HTTP 503 when `status` is `degraded`.
+Every major mechanic ships with: unit tests, integration tests, E2E smoke, resilience tests, metrics, documentation.
 
 ---
 
-# 8. Seed
+# 9. Health
 
-```bash
-npm run seed:dev
-```
-
-Idempotently creates **Europe-1**, starter map (32×32), and tiles.
+`GET /health` — no auth, no `/api` prefix. HTTP 503 when degraded.
 
 ---
 
-# 5. Post-Alpha Roadmap (game systems, not modules)
+# 10. Seed
+
+`npm run seed:dev` — idempotent Europe-1 + 32×32 map.
+
+---
+
+# 11. Post-Alpha Roadmap
 
 | Version | Focus |
 |---------|-------|
-| v0.2 | Economy — production, storage, resource ticks |
-| v0.3 | Army — training, upkeep, movement |
-| v0.4 | World & Territory — map, capture, ownership |
-| v0.5 | Combat — PvE / PvP |
-| v0.6 | Social — alliances, chat, diplomacy |
+| v0.2 | Economy |
+| v0.3 | Army |
+| v0.4 | World & Territory |
+| v0.5 | Combat |
+| v0.6 | Social |
 
-Each system reuses: **Command → Timed Job → Game Loop → Domain Event → WebSocket → UI**.
+Same pipeline for all: **Command → Timed Job → Game Loop → Domain Event → WebSocket → UI**.

@@ -37,12 +37,14 @@ This is the first **architecturally stable** milestone — not feature-complete,
 
 # 3. Tag Checklist
 
-- [ ] `npm run smoke:e2e` passes (live backend)
-- [ ] `npm run smoke:resilience` passes
-- [ ] `npm test` passes (backend)
-- [ ] `npm run build` passes (frontend + backend)
+See [Alpha Readiness Checklist](09_Alpha_Readiness.md).
+
+- [ ] Backend + frontend build
+- [ ] 20 unit tests pass
+- [ ] `npm run release:gate` green (health → seed → smoke → resilience → stuck-jobs)
 - [ ] `git tag v0.1.0-alpha`
-- [ ] GitHub Release notes
+
+CI (`.github/workflows/release-gate.yml`) enforces the gate on `main`.
 
 ---
 

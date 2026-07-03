@@ -17,7 +17,9 @@
     "smoke:e2e": "node scripts/smoke-e2e-game-loop.mjs",
     "smoke:resilience": "node scripts/resilience-game-loop.mjs",
     "seed": "prisma db seed",
-    "seed:dev": "prisma db seed"
+    "seed:dev": "prisma db seed",
+    "release:gate": "node scripts/release-gate.mjs",
+    "check:stuck-jobs": "node scripts/check-stuck-jobs.mjs"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",

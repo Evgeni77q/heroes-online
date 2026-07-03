@@ -1,0 +1,96 @@
+name: Release Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  DATABASE_URL: postgresql://heroes:heroes_dev@localhost:5432/heroes_online
+  JWT_SECRET: ci-test-jwt-secret-min-32-chars-long
+  ACCOUNT_AUTO_ACTIVATE: "true"
+  GAME_LOOP_TICK_MS: "1000"
+  GAME_SMOKE_FAST_BUILD: "true"
+  BACKEND_URL: http://localhost:8080
+
+jobs:
+  release-gate:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: heroes
+          POSTGRES_PASSWORD: heroes_dev
+          POSTGRES_DB: heroes_online
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U heroes -d heroes_online"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: backend
+        run: npx prisma generate
+
+      - name: Push database schema
+        working-directory: backend
+        run: npx prisma db push
+
+      - name: Backend unit tests
+        working-directory: backend
+        run: npm test
+
+      - name: Build backend
+        working-directory: backend
+        run: npm run build
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8080
+          NEXT_PUBLIC_WS_URL: http://localhost:8080
+        run: npm run build
+
+      - name: Start backend
+        working-directory: backend
+        run: |
+          npm run start:prod &
+          echo $! > backend.pid
+
+      - name: Run release gate
+        working-directory: backend
+        run: node scripts/release-gate.mjs
+
+      - name: Stop backend
+        if: always()
+        working-directory: backend
+        run: |
+          if [ -f backend.pid ]; then
+            kill "$(cat backend.pid)" || true
+          fi

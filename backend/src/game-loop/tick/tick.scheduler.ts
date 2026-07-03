@@ -18,6 +18,10 @@ export class TickScheduler {
     }
   }
 
+  isRunning() {
+    return this.interval !== undefined;
+  }
+
   onModuleDestroy() {
     this.stop();
   }

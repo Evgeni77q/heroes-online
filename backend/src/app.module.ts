@@ -11,6 +11,7 @@ import { CityModule } from './city/city.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { DomainEventsModule } from './domain-events/domain-events.module';
 import { GameLoopModule } from './game-loop/game-loop.module';
+import { HealthModule } from './health/health.module';
 import { LiveModule } from './live/live.module';
 import { MapModule } from './map/map.module';
 import { OnboardingModule } from './onboarding/onboarding.module';
@@ -34,6 +35,7 @@ import { WorldModule } from './world/world.module';
       },
     }),
     PrismaModule,
+    HealthModule,
     DomainEventsModule,
     AccountModule,
     AuthModule,

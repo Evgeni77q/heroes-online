@@ -26,4 +26,8 @@ export class RealtimeService {
     const client = this.clients.get(playerId);
     client?.emit(event, data);
   }
+
+  isReady() {
+    return this.server !== undefined;
+  }
 }

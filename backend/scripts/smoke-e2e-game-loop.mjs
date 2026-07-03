@@ -54,6 +54,12 @@ function waitForSocketEvent(socket, eventName, timeoutMs) {
 async function main() {
   console.log(`[smoke] target ${BASE_URL}`);
 
+  const health = await fetch(`${BASE_URL}/health`);
+  const healthBody = await health.json();
+  assert(healthBody.status === "ok", "health check failed");
+  assert(healthBody.database === "up", "database not up");
+  console.log("[smoke] OK health", healthBody.version);
+
   const register = await request("/api/v1/account/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

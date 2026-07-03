@@ -28,6 +28,8 @@ This is the first **architecturally stable** milestone — not feature-complete,
 - `DomainEventBus` + subscriber pattern
 - `GameJobRepository` (timed jobs)
 - Game loop metrics
+- `GET /health` diagnostics endpoint
+- `npm run seed:dev` — Europe-1 world bootstrap
 - E2E + resilience smoke scripts
 - Architectural rules documented
 

@@ -7,4 +7,5 @@ export default () => ({
   gameLoopTickMs: Number(process.env.GAME_LOOP_TICK_MS) || 10_000,
   accountAutoActivate: process.env.ACCOUNT_AUTO_ACTIVATE === 'true',
   gameSmokeFastBuild: process.env.GAME_SMOKE_FAST_BUILD === 'true',
+  appVersion: process.env.APP_VERSION ?? '0.1.0-alpha',
 });

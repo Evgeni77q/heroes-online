@@ -22,6 +22,6 @@ import { TickScheduler } from './tick/tick.scheduler';
     ArmyProcessor,
     WorldProcessor,
   ],
-  exports: [GameStateService, TickEngine],
+  exports: [GameStateService, TickEngine, TickScheduler],
 })
 export class GameLoopModule {}

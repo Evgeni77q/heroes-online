@@ -6,6 +6,19 @@
 
 # 1. E2E Smoke Test (required)
 
+### Quick start for new developers
+
+```bash
+docker compose up -d postgres
+cd backend
+npx prisma db push
+npm run seed:dev
+npm run start:dev
+npm run smoke:e2e
+```
+
+`GET /health` must return `status: "ok"` before running smoke tests.
+
 Run against a live backend with fast build enabled:
 
 ```bash
@@ -82,6 +95,51 @@ All contracts use explicit `version` where evolution is expected:
 | View API | evolves with `/api/v1/dashboard` until breaking change |
 
 New breaking shapes → increment version, never mutate v1 in place.
+
+---
+
+# 6. Game System Stabilization Rule (post-alpha)
+
+Every new major game system MUST ship with:
+
+| Artifact | Purpose |
+|----------|---------|
+| Unit tests | Business logic |
+| Integration tests | Repositories / services |
+| E2E smoke | Player scenario |
+| Resilience tests | Conflicts, recovery, edge cases |
+| Metrics | Observable in `/api/v1/admin/metrics` or health |
+| Documentation | User story + API/event contracts |
+
+Same bar as building upgrade (Story 4 + stabilization sprint).
+
+---
+
+# 7. Health Endpoint
+
+`GET /health` (no `/api` prefix, no auth):
+
+```json
+{
+  "status": "ok",
+  "database": "up",
+  "gameLoop": "running",
+  "realtime": "running",
+  "version": "0.1.0-alpha"
+}
+```
+
+Returns HTTP 503 when `status` is `degraded`.
+
+---
+
+# 8. Seed
+
+```bash
+npm run seed:dev
+```
+
+Idempotently creates **Europe-1**, starter map (32×32), and tiles.
 
 ---
 

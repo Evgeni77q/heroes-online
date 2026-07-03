@@ -2,6 +2,9 @@
   "name": "heroes-online-backend",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "ts-node --transpile-only prisma/seed.ts"
+  },
   "scripts": {
     "build": "nest build",
     "start": "nest start",
@@ -12,7 +15,9 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "smoke:e2e": "node scripts/smoke-e2e-game-loop.mjs",
-    "smoke:resilience": "node scripts/resilience-game-loop.mjs"
+    "smoke:resilience": "node scripts/resilience-game-loop.mjs",
+    "seed": "prisma db seed",
+    "seed:dev": "prisma db seed"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
@@ -46,6 +51,7 @@
     "prisma": "^6.0.0",
     "socket.io-client": "^4.8.0",
     "ts-jest": "^29.4.11",
+    "ts-node": "^10.9.2",
     "typescript": "^5.7.0"
   }
 }

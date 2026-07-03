@@ -9,12 +9,10 @@ import { CityService } from '../city/city.service';
 import { MapService } from '../map/map.service';
 import { PlayerService } from '../player/player.service';
 import { ResourceService } from '../resource/resource.service';
-import { WorldService } from '../world/world.service';
+import { WorldBootstrapService } from '../world/world-bootstrap.service';
 import {
   STARTER_CITY_NAME,
-  STARTER_MAP_SIZE,
   STARTER_RESOURCES,
-  STARTER_WORLD_NAME,
 } from './constants/starter.config';
 
 @Injectable()
@@ -23,11 +21,11 @@ export class PlayerInitializationService {
 
   constructor(
     private playerService: PlayerService,
-    private worldService: WorldService,
     private mapService: MapService,
     private cityService: CityService,
     private resourceService: ResourceService,
     private buildingService: BuildingService,
+    private worldBootstrap: WorldBootstrapService,
   ) {}
 
   async initialize(accountId: string, displayName: string) {
@@ -46,7 +44,7 @@ export class PlayerInitializationService {
       return;
     }
 
-    const world = await this.getOrCreateStarterWorld();
+    const { world } = await this.worldBootstrap.ensureStarterWorld();
     const player = await this.playerService.createPlayer(
       accountId,
       displayName,
@@ -61,11 +59,7 @@ export class PlayerInitializationService {
   }
 
   private async createStarterCity(player: Player) {
-    const map = await this.mapService.ensureWorldMap(
-      player.worldId,
-      STARTER_MAP_SIZE,
-      STARTER_MAP_SIZE,
-    );
+    const { map } = await this.worldBootstrap.ensureStarterWorld();
 
     const tile = await this.mapService.findFreeStarterTile(map.id);
 
@@ -91,25 +85,5 @@ export class PlayerInitializationService {
     await this.buildingService.ensureStarterBuildings(city.id);
 
     this.logger.log(`Created starter city ${city.id} for player ${player.id}`);
-  }
-
-  private async getOrCreateStarterWorld() {
-    const worlds = await this.worldService.getActiveWorlds();
-    const starterWorld = worlds.find(
-      (world) => world.name === STARTER_WORLD_NAME,
-    );
-
-    if (starterWorld) {
-      return starterWorld;
-    }
-
-    if (worlds.length > 0) {
-      return worlds[0];
-    }
-
-    return this.worldService.createWorld(
-      STARTER_WORLD_NAME,
-      'Starter world for new players',
-    );
   }
 }

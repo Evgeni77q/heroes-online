@@ -124,6 +124,14 @@ After the tag, **do not add infrastructure** unless a real need appears.
 
 Next focus: **v0.2 Economy** — first stress test of BalanceService, Game Loop load, WebSocket frequency, UI reactivity, and job queue under continuous production.
 
+## Infrastructure Freeze
+
+```
+if no real problem → no new infrastructure
+```
+
+No new queues, event buses, or layers "just in case". The existing foundation is **stress-tested through game systems**, not extended by default.
+
 ## Alpha tag criterion
 
 ```

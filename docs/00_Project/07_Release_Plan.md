@@ -65,3 +65,14 @@ Tag when **both** are true:
 2. No expired stuck jobs after smoke (`check-stuck-jobs`).
 
 Then stop touching infrastructure unless a real problem appears.
+
+### Engineering → Game Design
+
+| Phase | Question |
+|-------|----------|
+| v0.1 (done) | How does the engine work? |
+| v0.2+ | What should the player do? |
+
+Alpha tag is no longer "can we?" — it is **"when is CI green?"**
+
+After alpha: turn simulation into a game. Architecture changes only when load proves it necessary.

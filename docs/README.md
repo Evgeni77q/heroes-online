@@ -29,6 +29,7 @@
 | 03 | [03_Project_Glossary.md](00_Project/03_Project_Glossary.md) | Глоссарий проектных терминов |
 | 04 | [04_Project_Standards.md](00_Project/04_Project_Standards.md) | Стандарты кода, документации и процессов |
 | 05 | [05_Terminology.md](00_Project/05_Terminology.md) | Игровая и техническая терминология |
+| 06 | [06_User_Stories.md](00_Project/06_User_Stories.md) | User Stories, Epic backlog, Definition of Done |
 
 **Рекомендуемый порядок чтения:**
 

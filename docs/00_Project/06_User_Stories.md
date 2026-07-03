@@ -12,6 +12,14 @@ Heroes Online is developed through **User Stories**, not isolated modules.
 
 Every Story must deliver a **working player scenario** — not just files, APIs, or UI fragments.
 
+## Infrastructure Freeze (post v0.1.0-alpha)
+
+**Do not add new infrastructure until a real problem forces it.**
+
+Focus shifts from architecture to **game systems**. Reuse Command → Timed Job → Game Loop → Domain Event → WebSocket → UI.
+
+Next epic: [v0.2 Economy](11_v0.2_Economy.md).
+
 ---
 
 # 2. Story Template
@@ -26,8 +34,15 @@ Each User Story MUST define:
 | **Frontend** | UI and interaction |
 | **Integration** | Game Loop, WebSocket, events (if required) |
 | **Definition of Done** | Verifiable end-to-end scenario |
+| **Release Gate** | Extend smoke / `release:gate` when behavior is player-visible |
 
-A Story is **not complete** until the Definition of Done passes in a real environment (no mocks, no TODO placeholders).
+A Story is **not complete** until the Definition of Done passes in a real environment (no mocks, no TODO placeholders) **and** the release gate stays green.
+
+### Vertical Slice Checklist (every major story)
+
+```
+User Story → Backend → Frontend → Game Loop → Realtime → E2E → Release Gate
+```
 
 ---
 

@@ -124,11 +124,15 @@ After the tag, **do not add infrastructure** unless a real need appears.
 
 Next focus: **v0.2 Economy** — first stress test of BalanceService, Game Loop load, WebSocket frequency, UI reactivity, and job queue under continuous production.
 
-**Pipeline (fixed):** Command → Timed Job → Game Loop → Domain Event → WebSocket → UI
+## Alpha tag criterion
+
+```
+CI release-gate.yml green  +  no stuck jobs after smoke  →  v0.1.0-alpha justified
+```
+
+After tag: **game systems only** — see [v0.2 Economy](11_v0.2_Economy.md).
 
 ---
-
-## References
 
 - [Alpha Readiness Checklist](09_Alpha_Readiness.md)
 - [Release Stabilization](08_Release_Stabilization.md)

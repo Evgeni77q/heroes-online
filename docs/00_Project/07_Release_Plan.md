@@ -45,12 +45,23 @@ CI (`.github/workflows/release-gate.yml`) runs the same logic on every push to `
 
 # 4. After Alpha — Game System Roadmap
 
-| Version | Game System |
-|---------|-------------|
-| v0.2 | Economy |
-| v0.3 | Army |
-| v0.4 | World & Territory |
-| v0.5 | Combat |
-| v0.6 | Social |
+**Rule:** No new infrastructure without a proven need. Build game systems on the core.
+
+| Version | Game System | Doc |
+|---------|-------------|-----|
+| v0.2 | Economy — production, storage, player trade-offs | [11_v0.2_Economy](11_v0.2_Economy.md) |
+| v0.3 | Army | planned |
+| v0.4 | World & Territory | planned |
+| v0.5 | Combat | planned |
+| v0.6 | Social | planned |
 
 All systems use the same pipeline — no core rewrites.
+
+### v0.1.0-alpha tag criterion
+
+Tag when **both** are true:
+
+1. `release-gate.yml` passes fully on GitHub Actions (clean environment).
+2. No expired stuck jobs after smoke (`check-stuck-jobs`).
+
+Then stop touching infrastructure unless a real problem appears.

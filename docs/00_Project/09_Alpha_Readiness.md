@@ -20,7 +20,18 @@ bash scripts/fresh-clone-gate.sh      # Linux/macOS
 .\scripts\fresh-clone-gate.ps1        # Windows
 ```
 
-If this is green, the tag is **justified** — not ceremonial.
+## Runtime Maturity
+
+| Capability | Status |
+|------------|--------|
+| Reproducible runtime | `fresh-clone-gate` |
+| CI = production simulation | `release-gate.yml` |
+| Self-verifying world | `release:gate` output contract |
+| No manual DB dependency | documented rule |
+
+**If GitHub Actions `Release Gate` is green → tag `v0.1.0-alpha` is formally justified.**
+
+Local Docker is optional; **CI is the reference environment.**
 
 ---
 

@@ -45,6 +45,15 @@ The script:
 
 On success:
 
+```
+release gate result:
+  ✔ health
+  ✔ seed
+  ✔ e2e
+  ✔ resilience
+  ✔ no stuck jobs
+```
+
 ```bash
 git tag v0.1.0-alpha
 git push origin v0.1.0-alpha
@@ -52,7 +61,47 @@ git push origin v0.1.0-alpha
 
 ---
 
-## What This Proves
+## Two Levels of Trust
+
+| Level | Mechanism | Role |
+|-------|-----------|------|
+| Local | `fresh-clone-gate` | Development verification |
+| System | CI `release-gate.yml` | **Source of truth** |
+
+Both run the **same** `release:gate` contract. If CI is green on GitHub, the tag is formally justified — even without local Docker.
+
+```
+clean environment → build → start backend → full game lifecycle
+```
+
+CI is not “test CI” — it is a **game runtime simulator**.
+
+---
+
+## No Manual State Dependency
+
+**Rule:** Any game world state MUST be recoverable through `seed` + Game Loop.
+
+| Allowed | Forbidden |
+|---------|-----------|
+| `npm run seed:dev` | Manual SQL fixes as required startup step |
+| Game Loop ticks | Hand-editing rows to “fix” dev environment |
+| Idempotent re-seed | Hidden local-only DB state |
+
+If the world cannot be reproduced from seed + runtime, the gate is broken.
+
+---
+
+## Runtime Model
+
+```
+Before:  code → features → testing
+Now:     runtime → game world → verification
+```
+
+The system verifies itself. World state is reproducible. Behavior is deterministic through the gate.
+
+---
 
 | Layer | Verified |
 |-------|----------|

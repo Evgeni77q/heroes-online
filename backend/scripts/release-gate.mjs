@@ -4,6 +4,14 @@
  * Flow:
  *   GET /health == 200 → seed:dev → smoke:e2e → smoke:resilience → check-stuck-jobs
  *
+ * Expected output contract (on success):
+ *   release gate result:
+ *   ✔ health
+ *   ✔ seed
+ *   ✔ e2e
+ *   ✔ resilience
+ *   ✔ no stuck jobs
+ *
  * Usage:
  *   node scripts/release-gate.mjs
  *   BACKEND_URL=http://localhost:8080 node scripts/release-gate.mjs
@@ -19,6 +27,16 @@ const HEALTH_INTERVAL_MS = Number(process.env.HEALTH_INTERVAL_MS ?? 1000);
 const scriptsDir = path.dirname(fileURLToPath(import.meta.url));
 const backendDir = path.resolve(scriptsDir, "..");
 
+const GATE_STEPS = [
+  { id: "health", label: "health" },
+  { id: "seed", label: "seed" },
+  { id: "e2e", label: "e2e" },
+  { id: "resilience", label: "resilience" },
+  { id: "stuck-jobs", label: "no stuck jobs" },
+];
+
+const results = Object.fromEntries(GATE_STEPS.map((step) => [step.id, false]));
+
 function log(step, message) {
   console.log(`[release-gate] ${step}: ${message}`);
 }
@@ -27,6 +45,22 @@ function assert(condition, message) {
   if (!condition) {
     throw new Error(message);
   }
+}
+
+function markPassed(stepId) {
+  results[stepId] = true;
+  const step = GATE_STEPS.find((item) => item.id === stepId);
+  console.log(`[release-gate] ✔ ${step?.label ?? stepId}`);
+}
+
+function printSummary(failedStep) {
+  console.log("");
+  console.log("release gate result:");
+  for (const step of GATE_STEPS) {
+    const icon = results[step.id] ? "✔" : failedStep === step.id ? "✘" : "○";
+    console.log(`  ${icon} ${step.label}`);
+  }
+  console.log("");
 }
 
 async function sleep(ms) {
@@ -44,6 +78,7 @@ async function waitForHealth() {
         const body = await response.json();
         assert(body.status === "ok", `health status is ${body.status}`);
         log("health", `OK (${body.version})`);
+        markPassed("health");
         return body;
       }
     } catch {
@@ -56,9 +91,9 @@ async function waitForHealth() {
   throw new Error(`health check failed after ${HEALTH_RETRIES} attempts`);
 }
 
-function runCommand(step, command, args) {
+function runCommand(stepId, command, args) {
   return new Promise((resolve, reject) => {
-    log(step, `running ${command} ${args.join(" ")}`);
+    log(stepId, `running ${command} ${args.join(" ")}`);
 
     const child = spawn(command, args, {
       cwd: backendDir,
@@ -74,24 +109,34 @@ function runCommand(step, command, args) {
     child.on("error", reject);
     child.on("close", (code) => {
       if (code === 0) {
+        markPassed(stepId);
         resolve();
         return;
       }
 
-      reject(new Error(`${step} exited with code ${code}`));
+      reject(new Error(`${stepId} exited with code ${code}`));
     });
   });
 }
 
 async function main() {
   console.log(`[release-gate] target ${BASE_URL}`);
+  let failedStep = null;
 
-  await waitForHealth();
-  await runCommand("seed", "npm", ["run", "seed:dev"]);
-  await runCommand("smoke:e2e", "npm", ["run", "smoke:e2e"]);
-  await runCommand("smoke:resilience", "npm", ["run", "smoke:resilience"]);
-  await runCommand("stuck-jobs", "node", ["scripts/check-stuck-jobs.mjs"]);
+  try {
+    await waitForHealth();
+    await runCommand("seed", "npm", ["run", "seed:dev"]);
+    await runCommand("e2e", "npm", ["run", "smoke:e2e"]);
+    await runCommand("resilience", "npm", ["run", "smoke:resilience"]);
+    await runCommand("stuck-jobs", "node", ["scripts/check-stuck-jobs.mjs"]);
+  } catch (error) {
+    failedStep =
+      GATE_STEPS.find((step) => !results[step.id])?.id ?? "unknown";
+    printSummary(failedStep);
+    throw error;
+  }
 
+  printSummary(null);
   console.log("[release-gate] ALL PASSED — release is ready");
 }
 

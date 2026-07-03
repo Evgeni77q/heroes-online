@@ -4,7 +4,10 @@ import { BuildingService } from './building.service';
 import { BuildBuildingDto } from './dto/build-building.dto';
 import { UpgradeBuildingDto } from './dto/upgrade-building.dto';
 
-@Controller('building')
+@Controller({
+  path: 'building',
+  version: '1',
+})
 export class BuildingController {
   constructor(private service: BuildingService) {}
 

@@ -4,7 +4,10 @@ import { ArmyService } from './army.service';
 import { AttackDto } from './dto/attack.dto';
 import { TrainUnitDto } from './dto/train-unit.dto';
 
-@Controller('army')
+@Controller({
+  path: 'army',
+  version: '1',
+})
 export class ArmyController {
   constructor(private service: ArmyService) {}
 

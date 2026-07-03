@@ -2,7 +2,10 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CreateWorldDto } from './dto/create-world.dto';
 import { WorldService } from './world.service';
 
-@Controller('world')
+@Controller({
+  path: 'world',
+  version: '1',
+})
 export class WorldController {
   constructor(private service: WorldService) {}
 

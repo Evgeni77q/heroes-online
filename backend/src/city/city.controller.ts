@@ -3,7 +3,10 @@ import { JwtAuthGuard } from '../auth/jwt.guard';
 import { CityService } from './city.service';
 import { CreateCityDto } from './dto/create-city.dto';
 
-@Controller('city')
+@Controller({
+  path: 'city',
+  version: '1',
+})
 export class CityController {
   constructor(private service: CityService) {}
 

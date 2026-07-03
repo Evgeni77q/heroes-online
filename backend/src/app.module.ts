@@ -1,10 +1,12 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 import { AccountModule } from './account/account.module';
 import { AuthModule } from './auth/auth.module';
 import { ArmyModule } from './army/army.module';
 import { BalanceModule } from './balance/balance.module';
 import { BuildingModule } from './building/building.module';
 import { CityModule } from './city/city.module';
+import { GameLoopModule } from './game-loop/game-loop.module';
 import { LiveModule } from './live/live.module';
 import { MapModule } from './map/map.module';
 import { OpsModule } from './ops/ops.module';
@@ -29,9 +31,14 @@ import { WorldModule } from './world/world.module';
     ArmyModule,
     TerritoryModule,
     LiveModule,
+    GameLoopModule,
     BalanceModule,
     OpsModule,
     RealtimeModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestIdMiddleware).forRoutes('*');
+  }
+}

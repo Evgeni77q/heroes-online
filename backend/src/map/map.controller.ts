@@ -1,7 +1,10 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { MapService } from './map.service';
 
-@Controller('map')
+@Controller({
+  path: 'map',
+  version: '1',
+})
 export class MapController {
   constructor(private service: MapService) {}
 

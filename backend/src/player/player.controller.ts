@@ -11,7 +11,10 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
-@Controller('player')
+@Controller({
+  path: 'player',
+  version: '1',
+})
 export class PlayerController {
   constructor(private service: PlayerService) {}
 

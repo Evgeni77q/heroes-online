@@ -2,7 +2,10 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { RegisterDto } from './dto/register.dto';
 
-@Controller('account')
+@Controller({
+  path: 'account',
+  version: '1',
+})
 export class AccountController {
   constructor(private service: AccountService) {}
 

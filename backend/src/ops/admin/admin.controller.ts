@@ -4,7 +4,10 @@ import { EconomyMonitor } from '../monitoring/economy.monitor';
 import { WorldMonitor } from '../monitoring/world.monitor';
 import { AdminService } from './admin.service';
 
-@Controller('admin')
+@Controller({
+  path: 'admin',
+  version: '1',
+})
 export class AdminController {
   constructor(
     private service: AdminService,

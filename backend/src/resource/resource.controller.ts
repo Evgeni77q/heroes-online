@@ -3,7 +3,10 @@ import { JwtAuthGuard } from '../auth/jwt.guard';
 import { ConsumeResourceDto, ResourceBalanceDto } from './dto/resource-balance.dto';
 import { ResourceService } from './resource.service';
 
-@Controller('resource')
+@Controller({
+  path: 'resource',
+  version: '1',
+})
 export class ResourceController {
   constructor(private service: ResourceService) {}
 

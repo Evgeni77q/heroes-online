@@ -10,7 +10,7 @@ export interface DashboardPlayer {
   world: string;
 }
 
-export interface DashboardResources {
+export interface DashboardResourceAmounts {
   wood: number;
   stone: number;
   gold: number;
@@ -18,13 +18,17 @@ export interface DashboardResources {
 }
 
 export interface DashboardCity {
+  id: string;
   name: string;
-  townHallLevel: number;
+  level: number;
+  population: number;
+  storage: DashboardResourceAmounts;
+  production: DashboardResourceAmounts;
 }
 
 export interface DashboardResponse {
   account: DashboardAccount;
   player: DashboardPlayer;
-  resources: DashboardResources;
+  resources: DashboardResourceAmounts;
   city: DashboardCity;
 }

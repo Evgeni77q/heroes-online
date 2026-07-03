@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UnitType } from '@prisma/client';
 import { CombatUnit } from './formulas/combat.formula';
 import { BuildingFormula } from './formulas/building.formula';
+import { CityFormula } from './formulas/city.formula';
 import { CombatFormula } from './formulas/combat.formula';
 import { ProgressionFormula } from './formulas/progression.formula';
 import { ResourceFormula } from './formulas/resource.formula';
@@ -15,6 +16,18 @@ export class BalanceService {
 
   getStorageCapacity(level: number) {
     return ResourceFormula.storageCapacity(level);
+  }
+
+  getCityPopulation(cityLevel: number) {
+    return CityFormula.population(cityLevel);
+  }
+
+  getCityProduction(cityLevel: number) {
+    return CityFormula.productionPerMinute(cityLevel);
+  }
+
+  getCityStorage(cityLevel: number) {
+    return CityFormula.storageCapacity(cityLevel);
   }
 
   getBuildTime(level: number) {

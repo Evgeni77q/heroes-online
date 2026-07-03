@@ -1,6 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { BuildingType, TimedJobStatus } from '@prisma/client';
 import { DomainEventBus } from '../../domain-events/domain-event.bus';
+import { GameLoopMetricsService } from '../../ops/metrics/game-loop-metrics.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { GameJobKind } from '../types/game-job-kind';
 import { GameJobRepository } from '../repositories/game-job.repository';
@@ -14,6 +15,9 @@ describe('BuildingUpgradeCompletionService', () => {
   };
   const domainEvents = {
     publish: jest.fn().mockResolvedValue(undefined),
+  };
+  const gameLoopMetrics = {
+    recordJobCompleted: jest.fn(),
   };
   const prisma = {
     $transaction: jest.fn(),
@@ -33,6 +37,7 @@ describe('BuildingUpgradeCompletionService', () => {
         { provide: GameJobRepository, useValue: gameJobs },
         { provide: PrismaService, useValue: prisma },
         { provide: DomainEventBus, useValue: domainEvents },
+        { provide: GameLoopMetricsService, useValue: gameLoopMetrics },
       ],
     }).compile();
 
@@ -45,6 +50,7 @@ describe('BuildingUpgradeCompletionService', () => {
       playerId: 'player-1',
       fromLevel: 1,
       toLevel: 2,
+      finishAt: new Date('2026-07-03T18:42:00.000Z'),
       building: {
         cityId: 'city-1',
         type: BuildingType.FARM,

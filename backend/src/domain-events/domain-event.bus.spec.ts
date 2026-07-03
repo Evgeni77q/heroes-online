@@ -3,7 +3,10 @@ import { BuildingUpgradedEventV1 } from './events/building-upgraded.event';
 
 describe('DomainEventBus', () => {
   it('notifies all subscribers for an event', async () => {
-    const bus = new DomainEventBus();
+    const gameLoopMetrics = {
+      recordDomainEvent: jest.fn(),
+    };
+    const bus = new DomainEventBus(gameLoopMetrics as never);
     const first = jest.fn();
     const second = jest.fn();
 

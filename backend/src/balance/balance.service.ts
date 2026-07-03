@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { UnitType } from '@prisma/client';
 import { CombatUnit } from './formulas/combat.formula';
 import { BuildingFormula } from './formulas/building.formula';
@@ -10,6 +11,8 @@ import { UnitFormula } from './formulas/unit.formula';
 
 @Injectable()
 export class BalanceService {
+  constructor(private config: ConfigService) {}
+
   getResourceProduction(level: number) {
     return ResourceFormula.productionPerHour(level);
   }
@@ -31,6 +34,10 @@ export class BalanceService {
   }
 
   getBuildTime(level: number) {
+    if (this.config.get<boolean>('gameSmokeFastBuild')) {
+      return 2;
+    }
+
     return BuildingFormula.buildTime(level);
   }
 

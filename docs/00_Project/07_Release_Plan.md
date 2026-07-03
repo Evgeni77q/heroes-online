@@ -1,7 +1,9 @@
 # Release Plan
 
 **Target:** `v0.1.0-alpha`  
-**Status:** Ready after Story 4.4
+**Status:** Stabilization sprint — tag only after green E2E smoke
+
+See [Release Stabilization Sprint](08_Release_Stabilization.md).
 
 ---
 
@@ -25,37 +27,31 @@ This is the first **architecturally stable** milestone — not feature-complete,
 - Building upgrade: HTTP command → timed job → game loop → WebSocket sync
 - `DomainEventBus` + subscriber pattern
 - `GameJobRepository` (timed jobs)
+- Game loop metrics
+- E2E + resilience smoke scripts
 - Architectural rules documented
 
 ---
 
-# 3. What It Does Not Include
+# 3. Tag Checklist
 
-- Town Hall upgrade
-- Army, territory, alliances
-- Production tick for resources
-- Admin panel, mobile client
-
----
-
-# 4. Tag Checklist
-
-- [ ] Story 4.1–4.4 pass end-to-end smoke test (Docker + backend + frontend)
+- [ ] `npm run smoke:e2e` passes (live backend)
+- [ ] `npm run smoke:resilience` passes
 - [ ] `npm test` passes (backend)
 - [ ] `npm run build` passes (frontend + backend)
 - [ ] `git tag v0.1.0-alpha`
-- [ ] GitHub Release notes with architecture diagram
+- [ ] GitHub Release notes
 
 ---
 
-# 5. After Alpha
+# 4. After Alpha — Game System Roadmap
 
-New mechanics reuse the same pipeline:
+| Version | Game System |
+|---------|-------------|
+| v0.2 | Economy |
+| v0.3 | Army |
+| v0.4 | World & Territory |
+| v0.5 | Combat |
+| v0.6 | Social |
 
-| Mechanic | Command | Job kind | Domain event | Realtime subscriber |
-|----------|---------|----------|--------------|---------------------|
-| Building upgrade | ✅ | `BUILDING_UPGRADE` | `building.upgraded` | ✅ |
-| Army training | planned | `ARMY_TRAINING` | `army.trained` | planned |
-| Research | planned | `RESEARCH` | `research.completed` | planned |
-
-No core rewrites — new `GameJobKind`, handler, subscriber.
+All systems use the same pipeline — no core rewrites.

@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { GameLoopMetricsService } from '../../ops/metrics/game-loop-metrics.service';
 import { ArmyProcessor } from '../processors/army.processor';
 import { BuildingProcessor } from '../processors/building.processor';
 import { ResourceProcessor } from '../processors/resource.processor';
@@ -17,6 +18,7 @@ export class TickEngine implements OnModuleInit {
     private army: ArmyProcessor,
     private world: WorldProcessor,
     private config: ConfigService,
+    private gameLoopMetrics: GameLoopMetricsService,
   ) {}
 
   onModuleInit() {
@@ -25,6 +27,7 @@ export class TickEngine implements OnModuleInit {
   }
 
   async tick() {
+    const startedAt = Date.now();
     const tickId = this.gameState.nextTick();
     console.log(`[GAME LOOP] tick #${tickId}`);
 
@@ -32,5 +35,7 @@ export class TickEngine implements OnModuleInit {
     await this.building.process();
     await this.army.process();
     await this.world.process();
+
+    this.gameLoopMetrics.recordTick(Date.now() - startedAt);
   }
 }

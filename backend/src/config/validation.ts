@@ -14,4 +14,8 @@ export const validationSchema = Joi.object({
     .truthy('true', '1')
     .falsy('false', '0')
     .default(false),
+  GAME_SMOKE_FAST_BUILD: Joi.boolean()
+    .truthy('true', '1')
+    .falsy('false', '0')
+    .default(false),
 });

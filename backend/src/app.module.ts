@@ -12,6 +12,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { GameLoopModule } from './game-loop/game-loop.module';
 import { LiveModule } from './live/live.module';
 import { MapModule } from './map/map.module';
+import { OnboardingModule } from './onboarding/onboarding.module';
 import { OpsModule } from './ops/ops.module';
 import { PlayerModule } from './player/player.module';
 import { RealtimeModule } from './realtime/realtime.module';
@@ -48,6 +49,7 @@ import { WorldModule } from './world/world.module';
     BalanceModule,
     OpsModule,
     RealtimeModule,
+    OnboardingModule,
   ],
 })
 export class AppModule implements NestModule {

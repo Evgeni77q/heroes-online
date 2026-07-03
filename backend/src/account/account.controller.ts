@@ -1,5 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
+import { PlayerInitializationService } from '../onboarding/player-initialization.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AccountService } from './account.service';
@@ -12,6 +13,7 @@ export class AccountController {
   constructor(
     private service: AccountService,
     private auth: AuthService,
+    private onboarding: PlayerInitializationService,
   ) {}
 
   @Post('register')
@@ -21,6 +23,8 @@ export class AccountController {
       dto.username,
       dto.password,
     );
+
+    await this.onboarding.initialize(account.id, dto.username);
 
     return this.auth.createSessionForAccount(account);
   }

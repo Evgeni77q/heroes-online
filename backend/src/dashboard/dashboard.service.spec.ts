@@ -54,6 +54,7 @@ describe('DashboardService', () => {
   };
   const buildingService = {
     ensureStarterBuildings: jest.fn(),
+    getActiveUpgradesByCity: jest.fn().mockResolvedValue([]),
     getCityBuildings: jest.fn().mockResolvedValue([
       {
         id: 'building-farm',

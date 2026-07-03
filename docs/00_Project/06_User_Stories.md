@@ -226,7 +226,14 @@ Extended `GET /api/v1/dashboard` with `buildings[]`. Upgrade costs via `BalanceS
 
 ## Story 4: Upgrade (First Game Loop)
 
-**Status:** Planned
+**Status:** In progress (4.1 implemented)
+
+### 4.1 Upgrade Request — Done
+
+- `building_upgrade_queue` table + `TimedGameJob` interface
+- `POST /api/v1/building/upgrade` — command acceptance only
+- Resources consumed on request; level unchanged until Game Loop (4.2)
+- No WebSocket events yet (4.3)
 
 This is the first **complete game cycle** — not a single feature.
 

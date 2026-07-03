@@ -1,5 +1,5 @@
 import { formatResourceAmount } from "@/features/resources";
-import { BuildingStatus, BuildingView } from "../types/building.types";
+import { BuildingStatus, BuildingType, BuildingView } from "../types/building.types";
 
 export function UpgradeButton({
   building,
@@ -15,6 +15,7 @@ export function UpgradeButton({
   const isDisabled =
     isLoading ||
     !cityId ||
+    building.type === BuildingType.TownHall ||
     building.status === BuildingStatus.Locked ||
     building.status === BuildingStatus.Upgrading;
 

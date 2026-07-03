@@ -56,6 +56,15 @@ enum BuildingType {
   @@map("building_type")
 }
 
+enum TimedJobStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  CANCELLED
+
+  @@map("timed_job_status")
+}
+
 enum UnitType {
   INFANTRY
   ARCHER
@@ -97,6 +106,7 @@ model Player {
   account Account @relation(fields: [accountId], references: [id])
   world   World   @relation(fields: [worldId], references: [id])
   cities  City[]
+  upgradeJobs BuildingUpgradeQueue[]
 
   @@index([accountId])
   @@index([worldId])
@@ -198,15 +208,39 @@ model Building {
   cityId              String       @map("city_id") @db.Uuid
   type                BuildingType
   level               Int          @default(1)
+  currentUpgradeId    String?      @unique @map("current_upgrade_id") @db.Uuid
   isUnderConstruction Boolean      @default(false) @map("is_under_construction")
   finishAt            DateTime?    @map("finish_at") @db.Timestamptz(6)
   createdAt           DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  city City @relation(fields: [cityId], references: [id])
+  city            City                    @relation(fields: [cityId], references: [id])
+  currentUpgrade  BuildingUpgradeQueue?   @relation("ActiveBuildingUpgrade", fields: [currentUpgradeId], references: [id])
+  upgradeJobs     BuildingUpgradeQueue[]  @relation("BuildingUpgradeJobs")
 
   @@index([cityId])
   @@map("buildings")
+}
+
+model BuildingUpgradeQueue {
+  id         String         @id @default(uuid()) @db.Uuid
+  buildingId String         @map("building_id") @db.Uuid
+  playerId   String         @map("player_id") @db.Uuid
+  fromLevel  Int            @map("from_level")
+  toLevel    Int            @map("to_level")
+  startedAt  DateTime       @map("started_at") @db.Timestamptz(6)
+  finishAt   DateTime       @map("finish_at") @db.Timestamptz(6)
+  status     TimedJobStatus @default(RUNNING)
+  createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  building    Building  @relation("BuildingUpgradeJobs", fields: [buildingId], references: [id])
+  player      Player    @relation(fields: [playerId], references: [id])
+  activeFor   Building? @relation("ActiveBuildingUpgrade")
+
+  @@index([buildingId])
+  @@index([playerId])
+  @@index([status, finishAt])
+  @@map("building_upgrade_queue")
 }
 
 model Army {

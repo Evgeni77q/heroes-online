@@ -47,4 +47,14 @@ export class CityService {
   getPlayerCities(playerId: string) {
     return this.repo.findByPlayer(playerId);
   }
+
+  async getCityForPlayer(cityId: string, playerId: string) {
+    const city = await this.repo.findById(cityId);
+
+    if (!city || city.playerId !== playerId) {
+      return null;
+    }
+
+    return city;
+  }
 }

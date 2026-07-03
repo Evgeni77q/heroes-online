@@ -6,6 +6,17 @@ const STATUS_LABELS: Record<BuildingStatus, string> = {
   [BuildingStatus.Locked]: "Locked",
 };
 
+function formatFinishAt(finishAt: string): string {
+  return new Date(finishAt).toLocaleString();
+}
+
 export function BuildingStatusView({ building }: { building: BuildingView }) {
-  return <p>Status: {STATUS_LABELS[building.status]}</p>;
+  return (
+    <div>
+      <p>Status: {STATUS_LABELS[building.status]}</p>
+      {building.status === BuildingStatus.Upgrading && building.finishAt ? (
+        <p>Finishes: {formatFinishAt(building.finishAt)}</p>
+      ) : null}
+    </div>
+  );
 }

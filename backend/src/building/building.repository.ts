@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BuildingType } from '@prisma/client';
+import { BuildingType, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -28,20 +28,26 @@ export class BuildingRepository {
     });
   }
 
+  findById(id: string) {
+    return this.prisma.building.findUnique({
+      where: { id },
+    });
+  }
+
   findByCity(cityId: string) {
     return this.prisma.building.findMany({
       where: { cityId },
     });
   }
 
-  upgrade(buildingId: string, level: number) {
-    return this.prisma.building.update({
+  setCurrentUpgrade(
+    buildingId: string,
+    upgradeJobId: string,
+    client: Prisma.TransactionClient = this.prisma,
+  ) {
+    return client.building.update({
       where: { id: buildingId },
-      data: {
-        level,
-        isUnderConstruction: true,
-        finishAt: new Date(Date.now() + 120 * 1000),
-      },
+      data: { currentUpgradeId: upgradeJobId },
     });
   }
 }

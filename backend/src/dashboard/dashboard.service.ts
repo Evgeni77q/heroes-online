@@ -144,6 +144,12 @@ export class DashboardService {
   private async buildBuildings(city: City): Promise<DashboardBuilding[]> {
     await this.buildingService.ensureStarterBuildings(city.id);
     const buildings = await this.buildingService.getCityBuildings(city.id);
+    const activeUpgrades = await this.buildingService.getActiveUpgradesByCity(
+      city.id,
+    );
+    const upgradeByBuildingId = new Map(
+      activeUpgrades.map((job) => [job.buildingId, job]),
+    );
 
     const result: DashboardBuilding[] = [
       this.buildTownHall(city),
@@ -169,7 +175,13 @@ export class DashboardService {
       const building = buildings.find((item) => item.type === prismaType);
 
       if (building) {
-        result.push(this.mapBuilding(building, dashboardType));
+        result.push(
+          this.mapBuilding(
+            building,
+            dashboardType,
+            upgradeByBuildingId.get(building.id),
+          ),
+        );
       }
     }
 
@@ -199,14 +211,18 @@ export class DashboardService {
   private mapBuilding(
     building: Building,
     type: DashboardBuildingType,
+    activeUpgrade?: { finishAt: Date },
   ): DashboardBuilding {
+    const isUpgrading = Boolean(activeUpgrade);
+
     return {
       id: building.id,
       type,
       level: building.level,
-      status: building.isUnderConstruction
+      status: isUpgrading
         ? DashboardBuildingStatus.UPGRADING
         : DashboardBuildingStatus.IDLE,
+      finishAt: activeUpgrade?.finishAt.toISOString() ?? null,
       upgradeCost: this.balance.getUpgradeCost(building.level + 1),
     };
   }

@@ -24,4 +24,5 @@ export interface DashboardBuilding {
   level: number;
   status: DashboardBuildingStatus;
   upgradeCost: DashboardUpgradeCost;
+  finishAt?: string | null;
 }

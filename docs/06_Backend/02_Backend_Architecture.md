@@ -272,7 +272,7 @@ Every gameplay mechanic SHOULD follow:
 Command → Queue → Game Loop Tick → Domain Event → WebSocket → UI
 ```
 
-Story 4 establishes this pattern for building upgrades. Future mechanics reuse the same template.
+Timed jobs (`BuildingUpgradeQueue`, future `TrainingJob`, `ResearchJob`) implement the shared `TimedGameJob` contract. Story 4 establishes this pattern for building upgrades.
 
 ---
 

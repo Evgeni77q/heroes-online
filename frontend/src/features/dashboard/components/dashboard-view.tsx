@@ -1,6 +1,10 @@
 "use client";
 
-import { BuildingsList, useBuildings } from "@/features/buildings";
+import {
+  BuildingsList,
+  useBuildings,
+  useUpgradeBuilding,
+} from "@/features/buildings";
 import { CityCard } from "@/features/city";
 import { ResourcesPanel } from "@/features/resources";
 import axios from "axios";
@@ -29,6 +33,12 @@ function getErrorMessage(error: unknown): string {
 export function DashboardView() {
   const { data, buildings, cityId, isLoading, isError, error } =
     useBuildings();
+  const {
+    handleUpgrade,
+    upgradingBuildingId,
+    error: upgradeError,
+    clearError,
+  } = useUpgradeBuilding(cityId);
 
   if (isLoading) {
     return <p>Loading dashboard...</p>;
@@ -46,7 +56,20 @@ export function DashboardView() {
         amounts={data.resources}
         production={data.city.production}
       />
-      <BuildingsList buildings={buildings} cityId={cityId} />
+      {upgradeError ? (
+        <p role="alert">
+          {upgradeError}{" "}
+          <button type="button" onClick={clearError}>
+            Dismiss
+          </button>
+        </p>
+      ) : null}
+      <BuildingsList
+        buildings={buildings}
+        cityId={cityId}
+        onUpgrade={handleUpgrade}
+        upgradingBuildingId={upgradingBuildingId}
+      />
     </main>
   );
 }

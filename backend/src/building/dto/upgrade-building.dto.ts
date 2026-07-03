@@ -1,4 +1,4 @@
-import { IsInt, IsString, Max, Min } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class UpgradeBuildingDto {
   @IsString()
@@ -6,9 +6,4 @@ export class UpgradeBuildingDto {
 
   @IsString()
   cityId: string;
-
-  @IsInt()
-  @Min(1)
-  @Max(10)
-  level: number;
 }

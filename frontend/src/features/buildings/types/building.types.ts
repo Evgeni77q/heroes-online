@@ -24,6 +24,7 @@ export interface BuildingView {
   level: number;
   status: BuildingStatus;
   upgradeCost: UpgradeCost;
+  finishAt?: string | null;
 }
 
 export interface UpgradeBuildingAccepted {

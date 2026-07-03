@@ -5,6 +5,7 @@ export { BuildingStatusView } from "./components/building-status";
 export { BuildingsList } from "./components/buildings-list";
 export { UpgradeButton } from "./components/upgrade-button";
 export { useBuildings } from "./hooks/use-buildings";
+export { useUpgradeBuilding } from "./hooks/use-upgrade-building";
 export { useBuildingsStore } from "./store/buildings.store";
 export {
   BUILDING_ICONS,

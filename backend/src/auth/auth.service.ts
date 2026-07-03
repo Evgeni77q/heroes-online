@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AccountService } from '../account/account.service';
+import { Account, AccountStatus } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
-import { AccountStatus } from '@prisma/client';
+import { AccountService } from '../account/account.service';
 import { RefreshTokenService } from './refresh-token.service';
 
 @Injectable()
@@ -30,6 +30,10 @@ export class AuthService {
       throw new UnauthorizedException('INVALID_CREDENTIALS');
     }
 
+    return this.createSessionForAccount(account);
+  }
+
+  async createSessionForAccount(account: Account) {
     const payload = {
       sub: account.id,
       email: account.email,
@@ -39,9 +43,15 @@ export class AuthService {
     const refreshToken = await this.refreshService.create(account.id);
 
     return {
-      accessToken,
-      refreshToken,
-      accountId: account.id,
+      account: {
+        id: account.id,
+        username: account.username,
+        email: account.email,
+      },
+      tokens: {
+        accessToken,
+        refreshToken,
+      },
     };
   }
 

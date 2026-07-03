@@ -76,3 +76,5 @@ Then stop touching infrastructure unless a real problem appears.
 Alpha tag is no longer "can we?" — it is **"when is CI green?"**
 
 After alpha: turn simulation into a game. Architecture changes only when load proves it necessary.
+
+See [Engine vs Game Layers](12_Engine_and_Game_Layers.md).

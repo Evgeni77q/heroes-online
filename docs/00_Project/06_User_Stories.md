@@ -18,7 +18,7 @@ Every Story must deliver a **working player scenario** — not just files, APIs,
 
 Focus shifts from architecture to **game systems**. Reuse Command → Timed Job → Game Loop → Domain Event → WebSocket → UI.
 
-Next epic: [v0.2 Economy](11_v0.2_Economy.md).
+Next epic: [v0.2 Economy](11_v0.2_Economy.md). See [Engine vs Game Layers](12_Engine_and_Game_Layers.md) for the engineering → game design transition.
 
 ---
 

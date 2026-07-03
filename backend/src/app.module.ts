@@ -8,6 +8,7 @@ import { ArmyModule } from './army/army.module';
 import { BalanceModule } from './balance/balance.module';
 import { BuildingModule } from './building/building.module';
 import { CityModule } from './city/city.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 import { GameLoopModule } from './game-loop/game-loop.module';
 import { LiveModule } from './live/live.module';
 import { MapModule } from './map/map.module';
@@ -37,6 +38,7 @@ import { WorldModule } from './world/world.module';
     WorldModule,
     MapModule,
     CityModule,
+    DashboardModule,
     ResourceModule,
     BuildingModule,
     ArmyModule,

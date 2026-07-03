@@ -1,4 +1,5 @@
 import "./globals.css";
+import { AuthProvider } from "@/features/auth/providers/auth-provider";
 import { QueryProvider } from "@/providers/query-provider";
 
 export default function RootLayout({
@@ -10,7 +11,7 @@ export default function RootLayout({
     <html lang="ru">
       <body>
         <QueryProvider>
-          {children}
+          <AuthProvider>{children}</AuthProvider>
         </QueryProvider>
       </body>
     </html>

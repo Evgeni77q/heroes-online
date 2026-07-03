@@ -1,3 +1,5 @@
+import { DashboardView } from "@/features/dashboard/components/dashboard-view";
+
 export default function DashboardPage() {
-  return <h1>Heroes Online Dashboard</h1>;
+  return <DashboardView />;
 }

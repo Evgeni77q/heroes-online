@@ -35,4 +35,8 @@ export class AccountService {
   findByEmail(email: string) {
     return this.repo.findByEmail(email);
   }
+
+  findById(id: string) {
+    return this.repo.findById(id);
+  }
 }

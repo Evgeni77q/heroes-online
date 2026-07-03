@@ -26,14 +26,19 @@ export interface BuildingView {
   upgradeCost: UpgradeCost;
 }
 
-export interface BuildingUpdatedEvent {
+export interface BuildingUpdatedEventV1 {
   event: "building.updated";
+  version: 1;
   payload: {
     buildingId: string;
     level: number;
     status: BuildingStatus;
+    upgradeCost?: UpgradeCost;
   };
 }
+
+/** @deprecated Use BuildingUpdatedEventV1 */
+export type BuildingUpdatedEvent = BuildingUpdatedEventV1;
 
 export const BUILDING_LABELS: Record<BuildingType, string> = {
   [BuildingType.TownHall]: "Town Hall",

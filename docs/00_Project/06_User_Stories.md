@@ -226,11 +226,82 @@ Extended `GET /api/v1/dashboard` with `buildings[]`. Upgrade costs via `BalanceS
 
 ## Story 4: Upgrade (First Game Loop)
 
+**Status:** Planned
+
+This is the first **complete game cycle** — not a single feature.
+
+### Architecture Rule
+
+Game Loop MUST NOT call WebSocket Gateway directly.
+
 ```
-Upgrade → Backend → Game Loop → WebSocket → UI
+BuildingUpgraded (domain event)
+        ↓
+Domain Event Bus
+        ↓
+WebSocket Publisher
+        ↓
+Clients
 ```
 
-Story is **not done** until the full cycle works without page reload.
+Use existing `EventBusService` / `EventService` as the transport layer. Game logic emits domain events only.
+
+### Versioned Event Contracts
+
+All realtime game events MUST be versioned:
+
+```typescript
+interface BuildingUpdatedEventV1 {
+  event: "building.updated";
+  version: 1;
+  payload: {
+    buildingId: string;
+    level: number;
+    status: BuildingStatus;
+  };
+}
+```
+
+### 4.1 Upgrade Request
+
+```
+UpgradeButton → POST /api/v1/building/upgrade
+```
+
+**DoD:** request succeeds; cost validated; resources consumed/reserved; construction task created; building status → UPGRADING.
+
+### 4.2 Game Loop
+
+```
+Building Queue → Tick → Complete Upgrade
+```
+
+**DoD:** level increased; queue cleared; status → IDLE.
+
+### 4.3 WebSocket
+
+```
+Game Loop → building.updated → Gateway → owner only
+```
+
+**DoD:** event sent to city owner; format matches `BuildingUpdatedEventV1`.
+
+### 4.4 Frontend Sync
+
+```
+Socket → buildingsStore → BuildingCard → UI
+```
+
+**DoD:** no F5; no extra HTTP; level and next upgrade cost update automatically.
+
+### Full Cycle
+
+```
+Player → UpgradeButton → HTTP API → Game Logic → Game Loop
+  → Domain Event → WebSocket → Store → React UI
+```
+
+Story is **not done** until all four sub-tasks pass end-to-end.
 
 ---
 

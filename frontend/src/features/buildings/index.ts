@@ -14,6 +14,7 @@ export {
 } from "./types/building.types";
 export type {
   BuildingUpdatedEvent,
+  BuildingUpdatedEventV1,
   BuildingView,
   UpgradeCost,
 } from "./types/building.types";

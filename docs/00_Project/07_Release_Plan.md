@@ -1,7 +1,7 @@
 # Release Plan
 
 **Target:** `v0.1.0-alpha`  
-**Status:** Stabilization sprint — tag only after green E2E smoke
+**Status:** Blocked on [Fresh Clone Gate](10_Fresh_Clone_Gate.md) on real Docker/PostgreSQL
 
 See [Release Stabilization Sprint](08_Release_Stabilization.md).
 

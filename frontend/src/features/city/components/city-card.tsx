@@ -1,4 +1,5 @@
 import { CityCardData } from "../types/city.types";
+import { formatProductionRate, formatResourceAmount } from "@/features/resources";
 
 const sectionStyle = {
   marginTop: "24px",
@@ -14,40 +15,28 @@ const rowStyle = {
 
 function ResourceRows({
   values,
-  prefix,
+  formatValue,
 }: {
   values: CityCardData["storage"];
-  prefix?: string;
+  formatValue: (value: number) => string;
 }) {
   return (
     <>
       <div style={rowStyle}>
         <span>Wood</span>
-        <span>
-          {prefix}
-          {values.wood}
-        </span>
+        <span>{formatValue(values.wood)}</span>
       </div>
       <div style={rowStyle}>
         <span>Stone</span>
-        <span>
-          {prefix}
-          {values.stone}
-        </span>
+        <span>{formatValue(values.stone)}</span>
       </div>
       <div style={rowStyle}>
         <span>Gold</span>
-        <span>
-          {prefix}
-          {values.gold}
-        </span>
+        <span>{formatValue(values.gold)}</span>
       </div>
       <div style={rowStyle}>
         <span>Food</span>
-        <span>
-          {prefix}
-          {values.food}
-        </span>
+        <span>{formatValue(values.food)}</span>
       </div>
     </>
   );
@@ -66,12 +55,12 @@ export function CityCard({ city }: { city: CityCardData }) {
 
       <div>
         <h3>Storage</h3>
-        <ResourceRows values={city.storage} />
+        <ResourceRows values={city.storage} formatValue={formatResourceAmount} />
       </div>
 
       <div>
         <h3>Production</h3>
-        <ResourceRows values={city.production} prefix="+" />
+        <ResourceRows values={city.production} formatValue={formatProductionRate} />
       </div>
     </section>
   );

@@ -1,10 +1,10 @@
 "use client";
 
 import { CityCard } from "@/features/city";
+import { ResourcesPanel } from "@/features/resources";
 import axios from "axios";
 import { useDashboard } from "../hooks/use-dashboard";
 import { DashboardHeader } from "./dashboard-header";
-import { ResourcesPanel } from "./resources-panel";
 
 function getErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
@@ -41,7 +41,10 @@ export function DashboardView() {
     <main style={{ padding: "24px", maxWidth: "640px" }}>
       <DashboardHeader data={data} />
       <CityCard city={data.city} />
-      <ResourcesPanel data={data} />
+      <ResourcesPanel
+        amounts={data.resources}
+        production={data.city.production}
+      />
     </main>
   );
 }

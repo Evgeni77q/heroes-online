@@ -148,21 +148,50 @@ None for Story 1 (static load; WebSocket in Story 4).
 
 ### Definition of Done
 
-- [ ] Player opens Dashboard after registration
-- [ ] City name is visible
-- [ ] Town Hall level is visible
-- [ ] Population is visible
-- [ ] Storage capacity per resource is visible
-- [ ] Production rate per resource is visible
-- [ ] All values come from backend (no mocks)
-- [ ] After F5, data reloads correctly
-- [ ] No TODOs or hardcoded placeholders
+- [x] Player opens Dashboard after registration
+- [x] City name is visible
+- [x] Town Hall level is visible
+- [x] Population is visible
+- [x] Storage capacity per resource is visible
+- [x] Production rate per resource is visible
+- [x] All values come from backend (no mocks)
+- [x] After F5, data reloads correctly
+- [x] No TODOs or hardcoded placeholders
 
 ---
 
 ## Story 2: Resources Panel
 
-Live resource values with production rates `(+12/min)`. Reuse component structure for future WebSocket updates.
+**Status:** Completed
+
+### Player Goal
+
+The player sees current resource balances and production rates on Dashboard in a clear, readable format.
+
+### Frontend
+
+`features/resources/`:
+
+```
+components/
+  resource-icon.tsx
+  resource-item.tsx
+  resources-panel.tsx
+types/resource.types.ts
+utils/format-resource.ts
+```
+
+### Definition of Done
+
+- [x] Unified `ResourceType` and `ResourceAmounts`
+- [x] `ResourceItem` component
+- [x] Resource icons (🌲 🪨 🪙 🌾)
+- [x] Number formatting (`12 500`)
+- [x] Production display (`+N/min`)
+- [x] `ResourcesPanel` accepts `amounts` + `production` props (WebSocket-ready, no Dashboard type coupling)
+- [x] Single dashboard API request
+- [x] Unit tests for `format-resource` utils
+- [x] No mocks or TODOs
 
 ---
 
@@ -194,7 +223,27 @@ This allows Story 4 to add WebSocket subscriptions with minimal refactoring.
 
 ---
 
-# 7. References
+# 7. Feature Completion Rule
+
+A feature is **complete** only when it:
+
+1. Has its own directory under `features/`
+2. Has its own types
+3. Does not depend directly on another feature's implementation (shared utils/types are allowed)
+4. Can be reused across screens
+5. Includes basic tests when it contains business logic
+
+Examples:
+
+| Feature | Tests required |
+|---------|----------------|
+| `resources/utils/format-resource` | Yes |
+| `resources/components/resource-item` | No (presentation only) |
+| `dashboard/dashboard.service` | Yes |
+
+---
+
+# 8. References
 
 - [API Contract](../06_Backend/01_API_Contract.md)
 - [Backend Architecture](../06_Backend/02_Backend_Architecture.md)

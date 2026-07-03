@@ -1,9 +1,9 @@
 "use client";
 
+import { BuildingsList, useBuildings } from "@/features/buildings";
 import { CityCard } from "@/features/city";
 import { ResourcesPanel } from "@/features/resources";
 import axios from "axios";
-import { useDashboard } from "../hooks/use-dashboard";
 import { DashboardHeader } from "./dashboard-header";
 
 function getErrorMessage(error: unknown): string {
@@ -27,7 +27,8 @@ function getErrorMessage(error: unknown): string {
 }
 
 export function DashboardView() {
-  const { data, isLoading, isError, error } = useDashboard();
+  const { data, buildings, cityId, isLoading, isError, error } =
+    useBuildings();
 
   if (isLoading) {
     return <p>Loading dashboard...</p>;
@@ -45,6 +46,7 @@ export function DashboardView() {
         amounts={data.resources}
         production={data.city.production}
       />
+      <BuildingsList buildings={buildings} cityId={cityId} />
     </main>
   );
 }

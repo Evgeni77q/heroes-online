@@ -26,9 +26,22 @@ export interface DashboardCity {
   production: DashboardResourceAmounts;
 }
 
+export interface DashboardBuilding {
+  id: string;
+  type: string;
+  level: number;
+  status: string;
+  upgradeCost: {
+    wood: number;
+    stone: number;
+    gold: number;
+  };
+}
+
 export interface DashboardData {
   account: DashboardAccount;
   player: DashboardPlayer;
   resources: DashboardResourceAmounts;
   city: DashboardCity;
+  buildings: DashboardBuilding[];
 }

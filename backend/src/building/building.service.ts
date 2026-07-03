@@ -39,4 +39,19 @@ export class BuildingService {
   getCityBuildings(cityId: string) {
     return this.repo.findByCity(cityId);
   }
+
+  async ensureStarterBuildings(cityId: string) {
+    const existing = await this.repo.findByCity(cityId);
+    const starterTypes = [
+      BuildingType.FARM,
+      BuildingType.LUMBER_MILL,
+      BuildingType.QUARRY,
+    ];
+
+    for (const type of starterTypes) {
+      if (!existing.some((building) => building.type === type)) {
+        await this.repo.createStarter(cityId, type);
+      }
+    }
+  }
 }

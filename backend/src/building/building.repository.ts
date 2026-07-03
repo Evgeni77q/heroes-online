@@ -17,6 +17,17 @@ export class BuildingRepository {
     });
   }
 
+  createStarter(cityId: string, type: BuildingType, level = 1) {
+    return this.prisma.building.create({
+      data: {
+        cityId,
+        type,
+        level,
+        isUnderConstruction: false,
+      },
+    });
+  }
+
   findByCity(cityId: string) {
     return this.prisma.building.findMany({
       where: { cityId },

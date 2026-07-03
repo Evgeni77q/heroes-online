@@ -4,6 +4,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Player } from '@prisma/client';
+import { BuildingService } from '../building/building.service';
 import { CityService } from '../city/city.service';
 import { MapService } from '../map/map.service';
 import { PlayerService } from '../player/player.service';
@@ -26,6 +27,7 @@ export class PlayerInitializationService {
     private mapService: MapService,
     private cityService: CityService,
     private resourceService: ResourceService,
+    private buildingService: BuildingService,
   ) {}
 
   async initialize(accountId: string, displayName: string) {
@@ -85,6 +87,8 @@ export class PlayerInitializationService {
         resource.amount,
       );
     }
+
+    await this.buildingService.ensureStarterBuildings(city.id);
 
     this.logger.log(`Created starter city ${city.id} for player ${player.id}`);
   }

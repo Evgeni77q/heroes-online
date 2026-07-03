@@ -31,4 +31,5 @@ export interface DashboardResponse {
   player: DashboardPlayer;
   resources: DashboardResourceAmounts;
   city: DashboardCity;
+  buildings: import('./building.types').DashboardBuilding[];
 }

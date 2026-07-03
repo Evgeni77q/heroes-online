@@ -197,7 +197,30 @@ utils/format-resource.ts
 
 ## Story 3: Buildings List
 
-Town Hall, Barracks, Farm, Sawmill, Quarry — from backend.
+**Status:** Completed
+
+### Player Goal
+
+The player sees all city buildings with levels, status, and upgrade costs.
+
+### Backend
+
+Extended `GET /api/v1/dashboard` with `buildings[]`. Upgrade costs via `BalanceService.getUpgradeCost()`. Starter buildings seeded on onboarding.
+
+### Frontend
+
+`features/buildings/` with `BuildingCard`, `BuildingsList`, `UpgradeButton`, `BuildingStatus` enum, Zustand store ready for WebSocket.
+
+### Definition of Done
+
+- [x] Dashboard displays buildings list
+- [x] Each building uses `BuildingCard`
+- [x] Typed `BuildingStatus` (IDLE, UPGRADING, LOCKED)
+- [x] Upgrade cost from BalanceService
+- [x] Upgrade button visible (full cycle in Story 4)
+- [x] Single dashboard API request
+- [x] WebSocket-ready store and `BuildingUpdatedEvent` type
+- [x] Build and tests pass
 
 ---
 

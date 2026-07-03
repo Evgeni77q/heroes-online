@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AccountModule } from '../account/account.module';
 import { AuthModule } from '../auth/auth.module';
 import { BalanceModule } from '../balance/balance.module';
+import { BuildingModule } from '../building/building.module';
 import { CityModule } from '../city/city.module';
 import { OnboardingModule } from '../onboarding/onboarding.module';
 import { PlayerModule } from '../player/player.module';
@@ -16,6 +17,7 @@ import { DashboardService } from './dashboard.service';
     AccountModule,
     OnboardingModule,
     BalanceModule,
+    BuildingModule,
     PlayerModule,
     WorldModule,
     CityModule,

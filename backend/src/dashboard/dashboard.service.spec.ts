@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing';
 import { AccountStatus } from '@prisma/client';
 import { AccountService } from '../account/account.service';
 import { BalanceService } from '../balance/balance.service';
+import { BuildingService } from '../building/building.service';
 import { CityService } from '../city/city.service';
 import { PlayerInitializationService } from '../onboarding/player-initialization.service';
 import { PlayerService } from '../player/player.service';
@@ -45,6 +46,37 @@ describe('DashboardService', () => {
       gold: 1,
       food: 2,
     }),
+    getUpgradeCost: jest.fn().mockReturnValue({
+      wood: 100,
+      stone: 50,
+      gold: 25,
+    }),
+  };
+  const buildingService = {
+    ensureStarterBuildings: jest.fn(),
+    getCityBuildings: jest.fn().mockResolvedValue([
+      {
+        id: 'building-farm',
+        type: 'FARM',
+        level: 1,
+        isUnderConstruction: false,
+        cityId: 'city-1',
+      },
+      {
+        id: 'building-mill',
+        type: 'LUMBER_MILL',
+        level: 1,
+        isUnderConstruction: false,
+        cityId: 'city-1',
+      },
+      {
+        id: 'building-quarry',
+        type: 'QUARRY',
+        level: 1,
+        isUnderConstruction: false,
+        cityId: 'city-1',
+      },
+    ]),
   };
 
   beforeEach(async () => {
@@ -60,6 +92,7 @@ describe('DashboardService', () => {
         { provide: ResourceService, useValue: resourceService },
         { provide: PlayerInitializationService, useValue: onboarding },
         { provide: BalanceService, useValue: balance },
+        { provide: BuildingService, useValue: buildingService },
       ],
     }).compile();
 
@@ -126,6 +159,14 @@ describe('DashboardService', () => {
       gold: 500,
       food: 250,
     });
+    expect(result.buildings).toHaveLength(5);
+    expect(result.buildings[0]).toMatchObject({
+      id: 'city-1',
+      type: 'TOWN_HALL',
+      level: 1,
+      status: 'IDLE',
+    });
+    expect(balance.getUpgradeCost).toHaveBeenCalled();
   });
 
   it('throws when account is missing', async () => {

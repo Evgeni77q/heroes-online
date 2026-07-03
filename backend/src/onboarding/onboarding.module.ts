@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { BuildingModule } from '../building/building.module';
 import { CityModule } from '../city/city.module';
 import { MapModule } from '../map/map.module';
 import { PlayerModule } from '../player/player.module';
@@ -7,7 +8,14 @@ import { WorldModule } from '../world/world.module';
 import { PlayerInitializationService } from './player-initialization.service';
 
 @Module({
-  imports: [PlayerModule, WorldModule, MapModule, CityModule, ResourceModule],
+  imports: [
+    PlayerModule,
+    WorldModule,
+    MapModule,
+    CityModule,
+    ResourceModule,
+    BuildingModule,
+  ],
   providers: [PlayerInitializationService],
   exports: [PlayerInitializationService],
 })

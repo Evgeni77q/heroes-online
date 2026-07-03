@@ -1,14 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Account, City, Player, ResourceType, World } from '@prisma/client';
+import { Account, Building, BuildingType, City, Player, ResourceType, World } from '@prisma/client';
 import { AccountService } from '../account/account.service';
 import { BalanceService } from '../balance/balance.service';
+import { BuildingService } from '../building/building.service';
 import { CityService } from '../city/city.service';
 import { PlayerInitializationService } from '../onboarding/player-initialization.service';
 import { PlayerService } from '../player/player.service';
 import { ResourceService } from '../resource/resource.service';
 import { WorldService } from '../world/world.service';
 import {
-  DashboardAccount,
+  DashboardBuilding,
+  DashboardBuildingStatus,
+  DashboardBuildingType,
+} from './types/building.types';
+import {
   DashboardCity,
   DashboardPlayer,
   DashboardResourceAmounts,
@@ -23,6 +28,7 @@ export class DashboardService {
     private worldService: WorldService,
     private cityService: CityService,
     private resourceService: ResourceService,
+    private buildingService: BuildingService,
     private onboarding: PlayerInitializationService,
     private balance: BalanceService,
   ) {}
@@ -34,6 +40,7 @@ export class DashboardService {
     const cityEntity = await this.ensureCity(accountId, account.username, player);
     const city = this.buildCity(cityEntity);
     const resources = await this.buildResources(cityEntity.id);
+    const buildings = await this.buildBuildings(cityEntity);
 
     return {
       account: {
@@ -43,6 +50,7 @@ export class DashboardService {
       player: this.buildPlayerView(player, world, cityEntity.id),
       resources,
       city,
+      buildings,
     };
   }
 
@@ -117,7 +125,9 @@ export class DashboardService {
     };
   }
 
-  private async buildResources(cityId: string): Promise<DashboardResourceAmounts> {
+  private async buildResources(
+    cityId: string,
+  ): Promise<DashboardResourceAmounts> {
     const balances = await this.resourceService.getCityResources(cityId);
 
     const amount = (type: ResourceType) =>
@@ -128,6 +138,76 @@ export class DashboardService {
       stone: amount(ResourceType.STONE),
       gold: amount(ResourceType.GOLD),
       food: amount(ResourceType.FOOD),
+    };
+  }
+
+  private async buildBuildings(city: City): Promise<DashboardBuilding[]> {
+    await this.buildingService.ensureStarterBuildings(city.id);
+    const buildings = await this.buildingService.getCityBuildings(city.id);
+
+    const result: DashboardBuilding[] = [
+      this.buildTownHall(city),
+      this.buildLockedBarracks(city.id),
+    ];
+
+    const mappedTypes: Array<{
+      prismaType: BuildingType;
+      dashboardType: DashboardBuildingType;
+    }> = [
+      { prismaType: BuildingType.FARM, dashboardType: DashboardBuildingType.FARM },
+      {
+        prismaType: BuildingType.LUMBER_MILL,
+        dashboardType: DashboardBuildingType.SAWMILL,
+      },
+      {
+        prismaType: BuildingType.QUARRY,
+        dashboardType: DashboardBuildingType.QUARRY,
+      },
+    ];
+
+    for (const { prismaType, dashboardType } of mappedTypes) {
+      const building = buildings.find((item) => item.type === prismaType);
+
+      if (building) {
+        result.push(this.mapBuilding(building, dashboardType));
+      }
+    }
+
+    return result;
+  }
+
+  private buildTownHall(city: City): DashboardBuilding {
+    return {
+      id: city.id,
+      type: DashboardBuildingType.TOWN_HALL,
+      level: city.level,
+      status: DashboardBuildingStatus.IDLE,
+      upgradeCost: this.balance.getUpgradeCost(city.level + 1),
+    };
+  }
+
+  private buildLockedBarracks(cityId: string): DashboardBuilding {
+    return {
+      id: `locked-barracks-${cityId}`,
+      type: DashboardBuildingType.BARRACKS,
+      level: 0,
+      status: DashboardBuildingStatus.LOCKED,
+      upgradeCost: { wood: 0, stone: 0, gold: 0 },
+    };
+  }
+
+  private mapBuilding(
+    building: Building,
+    type: DashboardBuildingType,
+  ): DashboardBuilding {
+    return {
+      id: building.id,
+      type,
+      level: building.level,
+      status: building.isUnderConstruction
+        ? DashboardBuildingStatus.UPGRADING
+        : DashboardBuildingStatus.IDLE,
+      upgradeCost: this.balance.getUpgradeCost(building.level + 1),
     };
   }
 }

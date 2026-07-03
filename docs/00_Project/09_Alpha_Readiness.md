@@ -1,68 +1,55 @@
 # v0.1.0-alpha Readiness Checklist
 
-**Do not tag `v0.1.0-alpha` until every item is green.**
+**Do not tag `v0.1.0-alpha` until the [Fresh Clone Gate](10_Fresh_Clone_Gate.md) passes.**
+
+The only remaining risk is **real-environment stability** (Docker, PostgreSQL, WebSocket, tick timing) — not code.
 
 ---
 
-## Build & Unit Tests
-
-- [ ] Backend builds (`cd backend && npm run build`)
-- [ ] Frontend builds (`cd frontend && npm run build`)
-- [ ] Unit tests pass (`cd backend && npm test` — 20 tests)
-
----
-
-## Release Gate (live backend required)
-
-Standard gate — same as CI:
+## Primary Gate (required)
 
 ```
-Backend startup
-    ↓
-GET /health == 200
-    ↓
-seed:dev
-    ↓
-smoke:e2e
-    ↓
-smoke:resilience
-    ↓
-check-stuck-jobs
+1. fresh clone
+2. docker compose up
+3. seed
+4. release:gate
 ```
-
-One command (backend must already be running):
 
 ```bash
-cd backend
-npm run release:gate
+bash scripts/fresh-clone-gate.sh      # Linux/macOS
+.\scripts\fresh-clone-gate.ps1        # Windows
 ```
 
-Or step by step:
-
-```bash
-curl http://localhost:8080/health          # status: ok
-npm run seed:dev                           # idempotent
-npm run smoke:e2e
-npm run smoke:resilience
-node scripts/check-stuck-jobs.mjs          # no expired PENDING/RUNNING
-```
+If this is green, the tag is **justified** — not ceremonial.
 
 ---
 
-## Stuck Jobs Rule
+## Secondary Checks (CI covers these)
 
-After smoke, the database MUST NOT contain jobs where:
+- [ ] Backend builds
+- [ ] Frontend builds
+- [ ] 20 unit tests pass
+- [ ] GitHub Actions `Release Gate` workflow green
 
-- `status` is `PENDING` or `RUNNING`, **and**
-- `finishAt <= now` (expired but not completed)
+---
 
-Active upgrades with `finishAt` in the future are allowed (e.g. after resilience tests).
+## Release Gate Internals
+
+```
+GET /health == 200 → seed:dev → smoke:e2e → smoke:resilience → check-stuck-jobs
+```
+
+```bash
+cd backend && npm run release:gate   # when backend already running
+```
+
+### Stuck Jobs Rule
+
+No jobs with `status IN (PENDING, RUNNING)` and `finishAt <= now`.
 
 ---
 
 ## Tag
-
-Only when all checks pass:
 
 ```bash
 git tag v0.1.0-alpha
@@ -71,18 +58,16 @@ git push origin v0.1.0-alpha
 
 ---
 
-## Post-Alpha Focus
+## After Alpha — Engine Operations Mode
 
-No further infrastructure unless required. Build game systems on the existing pipeline:
+Stop adding architecture. Add **game systems** on the core:
 
-| Version | System |
-|---------|--------|
-| v0.2 | Economy — production, storage, city balance |
-| v0.3 | Army — training, upkeep, movement |
-| v0.4 | World & Territory — interactive map, capture |
-| v0.5 | Combat — PvE/PvP via Game Loop + Domain Events |
-| v0.6 | Social — alliances, diplomacy, chat |
+| Version | System | Stresses |
+|---------|--------|----------|
+| v0.2 | Economy | BalanceService, production ticks, storage, WS frequency |
+| v0.3 | Army | Timed jobs, upkeep, movement |
+| v0.4 | World & Territory | Map state, ownership events |
+| v0.5 | Combat | Domain events at scale |
+| v0.6 | Social | Multi-player realtime |
 
-**Pipeline (unchanged):** Command → Timed Job → Game Loop → Domain Event → WebSocket → UI
-
-Each new system follows the [Game System Stabilization Rule](08_Release_Stabilization.md#6-game-system-stabilization-rule-post-alpha).
+**Pipeline:** Command → Timed Job → Game Loop → Domain Event → WebSocket → UI

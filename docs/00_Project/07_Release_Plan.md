@@ -37,14 +37,9 @@ This is the first **architecturally stable** milestone — not feature-complete,
 
 # 3. Tag Checklist
 
-See [Alpha Readiness Checklist](09_Alpha_Readiness.md).
+**One gate matters:** [Fresh Clone Gate](10_Fresh_Clone_Gate.md) (`fresh clone → docker → seed → release:gate`).
 
-- [ ] Backend + frontend build
-- [ ] 20 unit tests pass
-- [ ] `npm run release:gate` green (health → seed → smoke → resilience → stuck-jobs)
-- [ ] `git tag v0.1.0-alpha`
-
-CI (`.github/workflows/release-gate.yml`) enforces the gate on `main`.
+CI (`.github/workflows/release-gate.yml`) runs the same logic on every push to `main`.
 
 ---
 

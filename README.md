@@ -53,6 +53,19 @@ mkdocs build
 
 > Автоматическая публикация через GitHub Actions будет добавлена позже.
 
+## Alpha Bootstrap (before v0.1.0-alpha)
+
+The project is in **game engine operations** mode — new work adds game systems on the core, not architecture.
+
+**Only real risk left:** stability on a fresh environment.
+
+```bash
+cp backend/.env.example backend/.env
+bash scripts/fresh-clone-gate.sh    # or .\scripts\fresh-clone-gate.ps1
+```
+
+See [Fresh Clone Gate](docs/00_Project/10_Fresh_Clone_Gate.md). If green → `git tag v0.1.0-alpha`.
+
 ## Getting Started
 
 ```bash

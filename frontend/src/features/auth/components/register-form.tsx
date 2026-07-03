@@ -10,7 +10,7 @@ import {
   registerSchema,
   RegisterFormValues,
 } from "../schemas/register.schema";
-import { useAuthStore } from "../store/auth.store";
+import { useAuth } from "../hooks/use-auth";
 
 function getErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
@@ -26,7 +26,7 @@ function getErrorMessage(error: unknown): string {
 
 export function RegisterForm() {
   const router = useRouter();
-  const setSession = useAuthStore((state) => state.setSession);
+  const { setSession } = useAuth();
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {

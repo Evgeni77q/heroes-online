@@ -10,6 +10,7 @@ interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
+  isHydrated: boolean;
   setSession: (response: AuthResponse) => void;
   clearSession: () => void;
   hydrate: () => void;
@@ -20,6 +21,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   accessToken: null,
   refreshToken: null,
   isAuthenticated: false,
+  isHydrated: false,
 
   setSession: (response: AuthResponse) => {
     localStorage.setItem(ACCESS_TOKEN_KEY, response.tokens.accessToken);
@@ -57,6 +59,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     const accountRaw = localStorage.getItem(ACCOUNT_KEY);
 
     if (!accessToken || !refreshToken || !accountRaw) {
+      set({ isHydrated: true });
       return;
     }
 
@@ -68,11 +71,20 @@ export const useAuthStore = create<AuthState>((set) => ({
         accessToken,
         refreshToken,
         isAuthenticated: true,
+        isHydrated: true,
       });
     } catch {
       localStorage.removeItem(ACCESS_TOKEN_KEY);
       localStorage.removeItem(REFRESH_TOKEN_KEY);
       localStorage.removeItem(ACCOUNT_KEY);
+
+      set({
+        account: null,
+        accessToken: null,
+        refreshToken: null,
+        isAuthenticated: false,
+        isHydrated: true,
+      });
     }
   },
 }));

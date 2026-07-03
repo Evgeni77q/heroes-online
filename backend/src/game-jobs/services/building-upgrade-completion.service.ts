@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BuildingUpgradedEventV1 } from '../../domain-events/events/building-upgraded.event';
-import { DomainEventPublisher } from '../../domain-events/domain-event.publisher';
+import { DomainEventBus } from '../../domain-events/domain-event.bus';
 import { PrismaService } from '../../prisma/prisma.service';
 import { GameJobRepository } from '../repositories/game-job.repository';
 
@@ -9,7 +9,7 @@ export class BuildingUpgradeCompletionService {
   constructor(
     private gameJobs: GameJobRepository,
     private prisma: PrismaService,
-    private domainEvents: DomainEventPublisher,
+    private domainEvents: DomainEventBus,
   ) {}
 
   async complete(jobId: string, now: Date): Promise<BuildingUpgradedEventV1 | null> {
@@ -43,7 +43,7 @@ export class BuildingUpgradeCompletionService {
     });
 
     if (event) {
-      this.domainEvents.publish(event);
+      await this.domainEvents.publish(event);
     }
 
     return event;

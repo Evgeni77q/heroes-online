@@ -2,6 +2,7 @@
 
 import {
   BuildingsList,
+  useBuildingRealtime,
   useBuildings,
   useUpgradeBuilding,
 } from "@/features/buildings";
@@ -39,6 +40,11 @@ export function DashboardView() {
     error: upgradeError,
     clearError,
   } = useUpgradeBuilding(cityId);
+
+  useBuildingRealtime({
+    playerId: data?.player.id,
+    worldId: data?.player.worldId,
+  });
 
   if (isLoading) {
     return <p>Loading dashboard...</p>;

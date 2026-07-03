@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { BuildingType, TimedJobStatus } from '@prisma/client';
-import { DomainEventPublisher } from '../../domain-events/domain-event.publisher';
+import { DomainEventBus } from '../../domain-events/domain-event.bus';
 import { PrismaService } from '../../prisma/prisma.service';
 import { GameJobKind } from '../types/game-job-kind';
 import { GameJobRepository } from '../repositories/game-job.repository';
@@ -13,7 +13,7 @@ describe('BuildingUpgradeCompletionService', () => {
     claimCompletion: jest.fn(),
   };
   const domainEvents = {
-    publish: jest.fn(),
+    publish: jest.fn().mockResolvedValue(undefined),
   };
   const prisma = {
     $transaction: jest.fn(),
@@ -32,7 +32,7 @@ describe('BuildingUpgradeCompletionService', () => {
         BuildingUpgradeCompletionService,
         { provide: GameJobRepository, useValue: gameJobs },
         { provide: PrismaService, useValue: prisma },
-        { provide: DomainEventPublisher, useValue: domainEvents },
+        { provide: DomainEventBus, useValue: domainEvents },
       ],
     }).compile();
 

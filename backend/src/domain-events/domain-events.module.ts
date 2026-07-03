@@ -1,9 +1,9 @@
 import { Global, Module } from '@nestjs/common';
-import { DomainEventPublisher } from './domain-event.publisher';
+import { DomainEventBus } from './domain-event.bus';
 
 @Global()
 @Module({
-  providers: [DomainEventPublisher],
-  exports: [DomainEventPublisher],
+  providers: [DomainEventBus],
+  exports: [DomainEventBus],
 })
 export class DomainEventsModule {}

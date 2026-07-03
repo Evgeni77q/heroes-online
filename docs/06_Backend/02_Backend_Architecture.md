@@ -136,10 +136,26 @@ View APIs (`GET /dashboard`) load initial screen state. Ongoing gameplay sync fl
 Business logic must not depend on WebSocket transport.
 
 ```
-Domain Event → Event Bus → WebSocket Publisher → Clients
+Domain Event → DomainEventBus → Subscribers (Realtime, Analytics, …) → Clients
 ```
 
+Game Loop and completion services publish to `DomainEventBus` only. `BuildingUpdatedRealtimeSubscriber` bridges to `EventBusService`.
+
 See also: [Game Communication Model](#15-game-communication-model).
+
+## Single Source of Truth
+
+**Game Loop is the only source of truth for game state changes.**
+
+HTTP creates commands (enqueue jobs, reserve resources). It never applies final world state (level changes, battle outcomes, research completion).
+
+| Layer | May change final game state? |
+|-------|---------------------------|
+| HTTP Command | No — enqueue only |
+| Game Loop | Yes |
+| WebSocket | No — read-only notification |
+
+This rule applies to PvP, research, market, alliances, and sieges.
 
 ---
 

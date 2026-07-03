@@ -226,7 +226,7 @@ Extended `GET /api/v1/dashboard` with `buildings[]`. Upgrade costs via `BalanceS
 
 ## Story 4: Upgrade (First Game Loop)
 
-**Status:** In progress (4.1–4.2 implemented)
+**Status:** Completed (ready for v0.1.0-alpha)
 
 ### 4.1 Upgrade Request — Done
 
@@ -309,25 +309,46 @@ findExpiredJobs → markRunning (atomic) → complete (transaction) → Building
 - `GameJobRepository` — generic timed job access (`findExpired`, `markRunning`, `complete`, `cancel`)
 - Jobs created as `PENDING`; lock via atomic `PENDING → RUNNING`
 - Completion in single transaction: level++, `currentUpgradeId = null`, job `COMPLETED`
-- `DomainEventPublisher` only — no WebSocket (4.3)
+- `DomainEventBus` publishes `BuildingUpgradedEventV1` — no WebSocket in Game Loop
 
-### 4.3 WebSocket
+### 4.3 WebSocket — Done
+
+```
+BuildingUpgradedEventV1 → DomainEventBus → BuildingUpdatedRealtimeSubscriber → emitToPlayer()
+```
+
+- `DomainEventBus` with `subscribe` / `publish` (0..N subscribers)
+- `BuildingUpdatedRealtimeSubscriber` maps domain → `building.updated` v1
+- Game Loop does not know about WebSocket
+
+### 4.4 Frontend Sync — Done
+
+```
+Socket → building.updated → buildingsStore → BuildingCard
+```
+
+- `useBuildingRealtime` — no HTTP on completion
+- Level and `upgradeCost` update from WebSocket only
+
+### 4.3 WebSocket (reference)
 
 ```
 Game Loop → building.updated → Gateway → owner only
 ```
 
-**DoD:** event sent to city owner; format matches `BuildingUpdatedEventV1`.
+**DoD:** event sent to city owner; format matches `BuildingUpdatedEventV1`. ✅
 
-### 4.4 Frontend Sync
+### 4.4 Frontend Sync (reference)
 
 ```
 Socket → buildingsStore → BuildingCard → UI
 ```
 
-**DoD:** no F5; no extra HTTP; level and next upgrade cost update automatically.
+**DoD:** no F5; no extra HTTP; level and next upgrade cost update automatically. ✅
 
-### Full Cycle
+### Release Milestone
+
+After Story 4.4, tag **v0.1.0-alpha** — first stable vertical slice (Command → Timed Job → Game Loop → Domain Event → Realtime → Store → UI). See [Release Plan](07_Release_Plan.md).
 
 ```
 Player → UpgradeButton → HTTP API → Game Logic → Game Loop

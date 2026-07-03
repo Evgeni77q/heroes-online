@@ -118,3 +118,11 @@ Every major mechanic ships with: unit tests, integration tests, E2E smoke, resil
 | v0.6 | Social |
 
 Same pipeline for all: **Command → Timed Job → Game Loop → Domain Event → WebSocket → UI**.
+
+---
+
+# 12. No Manual State Dependency
+
+Any game world state MUST be recoverable through `seed` + Game Loop.
+
+Manual database edits MUST NOT be a required step to start or verify the system.

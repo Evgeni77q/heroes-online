@@ -226,7 +226,7 @@ Extended `GET /api/v1/dashboard` with `buildings[]`. Upgrade costs via `BalanceS
 
 ## Story 4: Upgrade (First Game Loop)
 
-**Status:** In progress (4.1 implemented)
+**Status:** In progress (4.1–4.2 implemented)
 
 ### 4.1 Upgrade Request — Done
 
@@ -300,13 +300,16 @@ Final level and `upgradeCost` arrive via `BuildingUpdatedEventV1` (4.3–4.4).
 2. **Game Loop owns time** — no `setTimeout`, `sleep`, or delayed controller logic; only Queue → Tick → Complete.
 3. **Golden Rule** — HTTP initiates; WebSocket synchronizes UI.
 
-### 4.2 Game Loop
+### 4.2 Game Loop — Done
 
 ```
-Building Queue → Tick → Complete Upgrade
+findExpiredJobs → markRunning (atomic) → complete (transaction) → BuildingUpgradedEventV1
 ```
 
-**DoD:** level increased; queue cleared; status → IDLE.
+- `GameJobRepository` — generic timed job access (`findExpired`, `markRunning`, `complete`, `cancel`)
+- Jobs created as `PENDING`; lock via atomic `PENDING → RUNNING`
+- Completion in single transaction: level++, `currentUpgradeId = null`, job `COMPLETED`
+- `DomainEventPublisher` only — no WebSocket (4.3)
 
 ### 4.3 WebSocket
 

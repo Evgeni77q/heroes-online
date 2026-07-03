@@ -11,7 +11,7 @@ import { CityService } from '../city/city.service';
 import { PlayerService } from '../player/player.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ResourceRepository } from '../resource/resource.repository';
-import { BuildingUpgradeQueueRepository } from './building-upgrade-queue.repository';
+import { GameJobRepository } from '../game-jobs/repositories/game-job.repository';
 import { BuildingRepository } from './building.repository';
 import { UpgradeBuildingAcceptedDto } from './dto/upgrade-building-response.dto';
 
@@ -21,7 +21,7 @@ const MAX_BUILDING_LEVEL = 10;
 export class BuildingService {
   constructor(
     private repo: BuildingRepository,
-    private upgradeQueue: BuildingUpgradeQueueRepository,
+    private gameJobs: GameJobRepository,
     private resourceRepo: ResourceRepository,
     private balance: BalanceService,
     private playerService: PlayerService,
@@ -68,7 +68,7 @@ export class BuildingService {
       });
     }
 
-    const activeJob = await this.upgradeQueue.findActiveByBuildingId(buildingId);
+    const activeJob = await this.gameJobs.findActiveByBuildingId(buildingId);
 
     if (activeJob) {
       throw new ConflictException({
@@ -89,7 +89,7 @@ export class BuildingService {
     const job = await this.prisma.$transaction(async (tx) => {
       await this.consumeResources(cityId, cost, tx);
 
-      const createdJob = await this.upgradeQueue.create(
+      const createdJob = await this.gameJobs.scheduleBuildingUpgrade(
         {
           buildingId,
           playerId: player.id,
@@ -118,7 +118,7 @@ export class BuildingService {
   }
 
   getActiveUpgradesByCity(cityId: string) {
-    return this.upgradeQueue.findActiveByCityId(cityId);
+    return this.gameJobs.findActiveByCityId(cityId);
   }
 
   async ensureStarterBuildings(cityId: string) {

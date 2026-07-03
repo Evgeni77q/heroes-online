@@ -4,8 +4,8 @@ import { BalanceModule } from '../balance/balance.module';
 import { CityModule } from '../city/city.module';
 import { PlayerModule } from '../player/player.module';
 import { PrismaModule } from '../prisma/prisma.module';
+import { GameJobsModule } from '../game-jobs/game-jobs.module';
 import { ResourceModule } from '../resource/resource.module';
-import { BuildingUpgradeQueueRepository } from './building-upgrade-queue.repository';
 import { BuildingService } from './building.service';
 import { BuildingController } from './building.controller';
 import { BuildingRepository } from './building.repository';
@@ -18,13 +18,10 @@ import { BuildingRepository } from './building.repository';
     PlayerModule,
     CityModule,
     PrismaModule,
+    GameJobsModule,
   ],
   controllers: [BuildingController],
-  providers: [
-    BuildingService,
-    BuildingRepository,
-    BuildingUpgradeQueueRepository,
-  ],
+  providers: [BuildingService, BuildingRepository],
   exports: [BuildingService],
 })
 export class BuildingModule {}

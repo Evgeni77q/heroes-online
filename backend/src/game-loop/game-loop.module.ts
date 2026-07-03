@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { BalanceModule } from '../balance/balance.module';
+import { DomainEventsModule } from '../domain-events/domain-events.module';
+import { GameJobsModule } from '../game-jobs/game-jobs.module';
 import { ArmyProcessor } from './processors/army.processor';
 import { BuildingProcessor } from './processors/building.processor';
 import { ResourceProcessor } from './processors/resource.processor';
@@ -9,7 +11,7 @@ import { TickEngine } from './tick/tick.engine';
 import { TickScheduler } from './tick/tick.scheduler';
 
 @Module({
-  imports: [BalanceModule],
+  imports: [BalanceModule, GameJobsModule, DomainEventsModule],
   providers: [
     TickScheduler,
     TickEngine,

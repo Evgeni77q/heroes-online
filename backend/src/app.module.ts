@@ -9,6 +9,7 @@ import { BalanceModule } from './balance/balance.module';
 import { BuildingModule } from './building/building.module';
 import { CityModule } from './city/city.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { DomainEventsModule } from './domain-events/domain-events.module';
 import { GameLoopModule } from './game-loop/game-loop.module';
 import { LiveModule } from './live/live.module';
 import { MapModule } from './map/map.module';
@@ -33,6 +34,7 @@ import { WorldModule } from './world/world.module';
       },
     }),
     PrismaModule,
+    DomainEventsModule,
     AccountModule,
     AuthModule,
     PlayerModule,

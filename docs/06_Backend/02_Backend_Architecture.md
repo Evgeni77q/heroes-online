@@ -272,7 +272,20 @@ Every gameplay mechanic SHOULD follow:
 Command → Queue → Game Loop Tick → Domain Event → WebSocket → UI
 ```
 
-Timed jobs (`BuildingUpgradeQueue`, future `TrainingJob`, `ResearchJob`) implement the shared `TimedGameJob` contract. Story 4 establishes this pattern for building upgrades.
+Timed jobs (`BuildingUpgradeQueue`, future job types) implement the shared `TimedGameJob` contract via `GameJobRepository`. Game Loop processors MUST NOT query job tables directly.
+
+`GameJobRepository` API:
+
+| Method | Purpose |
+|--------|---------|
+| `findExpired(now)` | Jobs ready to complete (`finishAt <= now`) |
+| `markRunning(id)` | Atomic `PENDING → RUNNING` lock |
+| `claimCompletion(id, tx)` | Atomic `RUNNING → COMPLETED` inside transaction |
+| `cancel(id)` | Cancel pending/running job |
+
+New mechanics add new `GameJobKind` values and completion handlers — not new queue interaction patterns.
+
+Story 4 establishes this pattern for building upgrades.
 
 ---
 

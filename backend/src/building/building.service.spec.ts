@@ -11,7 +11,7 @@ import { CityService } from '../city/city.service';
 import { PlayerService } from '../player/player.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ResourceRepository } from '../resource/resource.repository';
-import { BuildingUpgradeQueueRepository } from './building-upgrade-queue.repository';
+import { GameJobRepository } from '../game-jobs/repositories/game-job.repository';
 import { BuildingRepository } from './building.repository';
 import { BuildingService } from './building.service';
 
@@ -25,10 +25,10 @@ describe('BuildingService', () => {
     createStarter: jest.fn(),
     create: jest.fn(),
   };
-  const upgradeQueue = {
+  const gameJobs = {
     findActiveByBuildingId: jest.fn(),
     findActiveByCityId: jest.fn(),
-    create: jest.fn(),
+    scheduleBuildingUpgrade: jest.fn(),
   };
   const resourceRepo = {
     getCityResources: jest.fn(),
@@ -58,7 +58,7 @@ describe('BuildingService', () => {
       providers: [
         BuildingService,
         { provide: BuildingRepository, useValue: repo },
-        { provide: BuildingUpgradeQueueRepository, useValue: upgradeQueue },
+        { provide: GameJobRepository, useValue: gameJobs },
         { provide: ResourceRepository, useValue: resourceRepo },
         { provide: BalanceService, useValue: balance },
         { provide: PlayerService, useValue: playerService },
@@ -77,7 +77,7 @@ describe('BuildingService', () => {
       level: 1,
       type: BuildingType.FARM,
     });
-    upgradeQueue.findActiveByBuildingId.mockResolvedValue(null);
+    gameJobs.findActiveByBuildingId.mockResolvedValue(null);
     resourceRepo.getCityResources.mockResolvedValue([
       { type: ResourceType.WOOD, amount: 500 },
       { type: ResourceType.STONE, amount: 500 },
@@ -93,7 +93,7 @@ describe('BuildingService', () => {
       { id: 'stone-1', type: ResourceType.STONE, amount: 500 },
       { id: 'gold-1', type: ResourceType.GOLD, amount: 500 },
     ]);
-    upgradeQueue.create.mockResolvedValue({
+    gameJobs.scheduleBuildingUpgrade.mockResolvedValue({
       id: 'job-1',
       finishAt: new Date('2026-07-03T18:42:10.000Z'),
     });
@@ -111,7 +111,7 @@ describe('BuildingService', () => {
       status: 'UPGRADING',
       finishAt: '2026-07-03T18:42:10.000Z',
     });
-    expect(upgradeQueue.create).toHaveBeenCalled();
+    expect(gameJobs.scheduleBuildingUpgrade).toHaveBeenCalled();
     expect(repo.setCurrentUpgrade).toHaveBeenCalledWith(
       'building-1',
       'job-1',
@@ -120,7 +120,7 @@ describe('BuildingService', () => {
   });
 
   it('rejects when building is already upgrading', async () => {
-    upgradeQueue.findActiveByBuildingId.mockResolvedValue({ id: 'job-active' });
+    gameJobs.findActiveByBuildingId.mockResolvedValue({ id: 'job-active' });
 
     await expect(
       service.requestUpgrade('account-1', 'building-1', 'city-1'),

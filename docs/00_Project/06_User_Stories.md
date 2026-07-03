@@ -270,6 +270,29 @@ UpgradeButton → POST /api/v1/building/upgrade
 
 **DoD:** request succeeds; cost validated; resources consumed/reserved; construction task created; building status → UPGRADING.
 
+**Response contract** — command acceptance only, not final state:
+
+```json
+{
+  "success": true,
+  "data": {
+    "buildingId": "...",
+    "status": "UPGRADING",
+    "finishAt": "2026-07-03T18:42:10Z"
+  }
+}
+```
+
+Final level and `upgradeCost` arrive via `BuildingUpdatedEventV1` (4.3–4.4).
+
+**Command errors** (examples): `INSUFFICIENT_RESOURCES`, `ALREADY_UPGRADING`, `MAX_LEVEL_REACHED`, `FORBIDDEN`.
+
+### Pre-implementation Rules
+
+1. **Commands vs Events** — HTTP commands may fail; WebSocket events only describe completed facts.
+2. **Game Loop owns time** — no `setTimeout`, `sleep`, or delayed controller logic; only Queue → Tick → Complete.
+3. **Golden Rule** — HTTP initiates; WebSocket synchronizes UI.
+
 ### 4.2 Game Loop
 
 ```

@@ -2,7 +2,7 @@
 
 **Version:** 1.0  
 **Status:** Approved  
-**Last Updated:** 2026-07-03
+**Last Updated:** 2026-07-03 (Game Commands & Events)
 
 ---
 
@@ -240,7 +240,81 @@ Any breaking change requires a new version.
 
 ---
 
-# 15. Future Extensions
+# 15. Game Commands
+
+Commands are HTTP requests that ask the game to perform an action. They MAY fail. They MUST NOT return final post-tick game state.
+
+## POST /api/v1/building/upgrade
+
+**Request:**
+
+```json
+{
+  "buildingId": "uuid",
+  "cityId": "uuid"
+}
+```
+
+**Success (202-style acceptance, HTTP 200):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "buildingId": "uuid",
+    "status": "UPGRADING",
+    "finishAt": "2026-07-03T18:42:10Z"
+  },
+  "meta": {
+    "timestamp": "2026-07-03T12:00:00Z",
+    "requestId": "req_xxxxx"
+  }
+}
+```
+
+**Business errors (examples):**
+
+| code | HTTP |
+|------|------|
+| `INSUFFICIENT_RESOURCES` | 422 |
+| `ALREADY_UPGRADING` | 409 |
+| `MAX_LEVEL_REACHED` | 422 |
+| `FORBIDDEN` | 403 |
+
+The client MUST NOT treat this response as the source of truth for level or `upgradeCost`. Those arrive via WebSocket.
+
+---
+
+# 16. Game Events (WebSocket)
+
+Events report facts that already happened. They are versioned contracts.
+
+## building.updated (v1)
+
+```json
+{
+  "event": "building.updated",
+  "version": 1,
+  "payload": {
+    "buildingId": "uuid",
+    "level": 2,
+    "status": "IDLE",
+    "upgradeCost": {
+      "wood": 120,
+      "stone": 80,
+      "gold": 40
+    }
+  }
+}
+```
+
+Emitted to the city owner only, after Game Loop completes the upgrade.
+
+Future events (`resources.updated`, `army.updated`, `territory.captured`) follow the same `event` + `version` + `payload` shape.
+
+---
+
+# 17. Future Extensions
 
 Reserved for:
 

@@ -16,5 +16,6 @@ export type {
   BuildingUpdatedEvent,
   BuildingUpdatedEventV1,
   BuildingView,
+  UpgradeBuildingAccepted,
   UpgradeCost,
 } from "./types/building.types";

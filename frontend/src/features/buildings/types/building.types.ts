@@ -26,6 +26,12 @@ export interface BuildingView {
   upgradeCost: UpgradeCost;
 }
 
+export interface UpgradeBuildingAccepted {
+  buildingId: string;
+  status: BuildingStatus.Upgrading;
+  finishAt: string;
+}
+
 export interface BuildingUpdatedEventV1 {
   event: "building.updated";
   version: 1;

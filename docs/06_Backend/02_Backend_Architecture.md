@@ -2,7 +2,7 @@
 
 **Version:** 1.0  
 **Status:** Approved  
-**Last Updated:** 2026-07-03
+**Last Updated:** 2026-07-03 (Game Communication Model)
 
 ---
 
@@ -118,17 +118,54 @@ These services may be injected into feature modules but should remain independen
 
 # 8. Realtime Integration
 
-HTTP modifies state.
+## Golden Rule
 
-Realtime distributes state changes.
+**HTTP initiates changes. WebSocket reports results.**
+
+| Transport | Role |
+|-----------|------|
+| HTTP | Player commands — request an action |
+| WebSocket | Game events — report what already happened |
+
+`POST /building/upgrade` MUST NOT become a UI synchronization mechanism. The client applies final state only from WebSocket events.
+
+View APIs (`GET /dashboard`) load initial screen state. Ongoing gameplay sync flows through events.
+
+## Transport Independence
 
 Business logic must not depend on WebSocket transport.
+
+```
+Domain Event → Event Bus → WebSocket Publisher → Clients
+```
+
+See also: [Game Communication Model](#15-game-communication-model).
 
 ---
 
 # 9. Game Loop Integration
 
-Game Loop is the only component responsible for autonomous world simulation:
+Game Loop is the **only owner of game time**.
+
+All autonomous progress — building completion, research, production, army movement, sieges, world events — advances exclusively through Game Loop ticks.
+
+## Forbidden Patterns
+
+```
+HTTP → setTimeout → upgrade complete     ❌
+HTTP → sleep() → upgrade                 ❌
+Controller → delay → change level        ❌
+```
+
+## Required Pattern
+
+```
+HTTP → Queue → Game Loop Tick → Complete → Domain Event
+```
+
+HTTP accepts a command and enqueues work. The tick completes it and emits an event.
+
+Game Loop responsibilities:
 
 - resource production;
 - building completion;
@@ -185,7 +222,61 @@ The architecture must support:
 
 ---
 
-# 15. Future Extensions
+# 15. Game Communication Model
+
+Two categories of messages exist. They MUST NOT be mixed.
+
+## 15.1 Commands (HTTP)
+
+A **command** is the player asking the game to do something.
+
+Examples:
+
+| Command | Endpoint (example) |
+|---------|-------------------|
+| `UpgradeBuildingCommand` | `POST /api/v1/building/upgrade` |
+| `TrainUnitsCommand` | `POST /api/v1/army/train` |
+| `AttackTerritoryCommand` | `POST /api/v1/territory/attack` |
+| `ResearchTechnologyCommand` | `POST /api/v1/research/start` |
+
+Commands:
+
+- MAY fail with a business error (insufficient resources, already upgrading, no access, limit exceeded);
+- MUST NOT complete long-running work inline;
+- SHOULD return minimal acceptance data, not final game state.
+
+## 15.2 Events (WebSocket)
+
+An **event** is the game reporting that something already happened.
+
+Examples:
+
+| Event | Contract |
+|-------|----------|
+| `BuildingUpdatedEventV1` | `building.updated` v1 |
+| `ResourcesUpdatedEventV1` | `resources.updated` v1 |
+| `ArmyUpdatedEventV1` | `army.updated` v1 |
+| `TerritoryCapturedEventV1` | `territory.captured` v1 |
+
+Events:
+
+- NEVER contain business decisions;
+- ONLY describe facts that already occurred;
+- MUST be versioned (`version: 1`).
+
+## 15.3 Standard Game Cycle
+
+Every gameplay mechanic SHOULD follow:
+
+```
+Command → Queue → Game Loop Tick → Domain Event → WebSocket → UI
+```
+
+Story 4 establishes this pattern for building upgrades. Future mechanics reuse the same template.
+
+---
+
+# 16. Future Extensions
 
 The architecture reserves space for:
 

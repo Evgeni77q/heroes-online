@@ -47,6 +47,7 @@ Any deviation from these rules is allowed **only** as a conscious architectural 
 5. Every feature must include a Definition of Done (DoD).
 6. Code must remain maintainable for 5+ years.
 7. Prefer extending existing systems over creating parallel ones.
+8. Every new gameplay mechanic must first be specified in `docs/GAME_BIBLE.md`, then in Domain Specs (`specs/` or an ADR-equivalent), and only then implemented in code.
 
 ---
 

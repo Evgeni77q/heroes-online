@@ -49,6 +49,17 @@ Any deviation from these rules is allowed **only** as a conscious architectural 
 7. Prefer extending existing systems over creating parallel ones.
 8. Every new gameplay mechanic must first be specified in `docs/GAME_BIBLE.md`, then in Domain Specs (`specs/` or an ADR-equivalent), and only then implemented in code.
 
+### PR Classification Convention (Recommended)
+When opening a PR, set/label it by type for faster review and automation:
+- `feature`: new user capability
+- `refactor`: implementation improvement without behavior change
+- `architecture`: architecture change (requires ADR)
+- `balance`: changes to gameplay parameters
+- `assets`: add/update visual resources only
+- `docs`: documentation change
+- `fix`: bugfix
+- `performance`: optimization
+
 ---
 
 ## Enforcement (How we keep the convention real)

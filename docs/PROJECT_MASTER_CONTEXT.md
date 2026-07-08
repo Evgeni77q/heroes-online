@@ -45,7 +45,7 @@ Barracks lv10 parts layout:
 - `frontend/src/features/capital-city/composition/barracks-lv10.composition.ts`
 
 ### Composite fallback rule (IMPORTANT)
-Composite fallback is shown in view mode until all required structural part PNGs are ready.
+Composite fallback is shown in view mode until all required structural part assets are ready.
 Logic:
 - `compositionUsesCompositeFallback()` in `composition/types.ts`
 
@@ -61,33 +61,45 @@ Use the documented visual production pipeline:
 
 Rule of thumb:
 1. Visual Bible (stages 1–4) must be signed before Stage 5 premium asset generation.
-2. In the capital-city code, we prefer local PNGs under `frontend/public/assets/...`.
+2. In the capital-city code, we prefer local image assets under `frontend/public/assets/...` (currently PNG, but formats may change).
 3. AI generation is not the primary path for city visuals unless the pipeline explicitly allows it.
 
 ## Local asset locations (city)
-All art referenced by the capital-city system must live under `frontend/public/assets/city/...`
+All capital-city art must live under `frontend/public/assets/city/...`.
 
-### Castle
-- Composite fallback:
-  - `frontend/public/assets/city/buildings/castle/lvl01.png`
-- Shared Lego parts:
-  - `frontend/public/assets/city/buildings/castle/shared/*.png`
+Important: code and compositions depend on **part ids** (domain entities), not on image filenames.
+The underlying formats may change later (`.png` → `.webp`/`.avif`/3D), without changing part ids.
 
-### Barracks
-- Tier-specific main building (currently lv10 art):
-  - `frontend/public/assets/city/buildings/barracks/lvl10/barracks_lvl10_main.png`
-- Shared props:
-  - `frontend/public/assets/city/buildings/barracks/shared/*.png`
+### Castle (part ids used by the Lego-kit)
+Structural (composite fallback gate):
+- `main_keep`
+- `gate`
+- `watch_tower`
+- `wall_straight`
+- `wall_corner`
+
+Other layered parts:
+- `bridge`
+- `inner_courtyard`
+- `main_stairs`
+- `banner`
+- `flagpole`
+- `torch_gate` / `torch_tower` / `torch_keep`
+- `fountain`
+
+### Barracks (part ids used by the Lego-kit)
+- `main_building` (tier-specific art for the main architecture)
+- `gate`
+- planned: `training_dummy`, `weapon_rack`, `torch`, `fence`, `banner`
 
 ### Ground
-- Until `grass.png` ships, the scene can use SVG fallback:
-  - `frontend/public/assets/city/ground/grass.svg`
+- until `grass` raster art ships, the scene can use SVG fallback: `grass.svg`
 
-## Asset resolver (what to change when adding new PNGs)
+## Asset resolver (what to change when adding new city assets)
 All city asset URL building is centralized in:
 - `frontend/src/features/capital-city/config/city-assets.config.ts`
 
-When you add/rename a PNG:
+When you add/rename an asset file (format may be PNG/WEBP/AVIF):
 1. Add/adjust the corresponding entry in the relevant `*_SHARED_PART_FILES`
 2. If it’s structural for the Lego kit, add its id to `*_REQUIRED_PART_IDS`
 3. If it’s a part that should appear in a specific composition, ensure the composition contains that part id.
@@ -102,19 +114,19 @@ Planned modules (implemented as separate part ids):
 
 ### Barracks
 Planned Lego kit chain:
-- `barracks_lvl10_main.png`
+- `main_building`
   ↓
-- `barracks_training_dummy.png`
+- `training_dummy`
   ↓
-- `barracks_weapon_rack.png`
+- `weapon_rack`
   ↓
-- `barracks_banner.png`
+- `banner`
   ↓
-- `barracks_torch.png`
+- `torch`
   ↓
-- `barracks_fence.png`
+- `fence`
   ↓
-- `barracks_gate.png`
+- `gate`
 
 When the later shared props exist, add their ids to:
 - `BARRACKS_SHARED_PART_FILES`
@@ -123,8 +135,120 @@ When the later shared props exist, add their ids to:
 ## Debug checklist for `/city`
 1. Open `http://localhost:3000/city`
 2. Verify the castle appears correctly:
-   - If castle looks “fragmented”, composite fallback isn’t gating correctly → check `CASTLE_REQUIRED_PART_IDS` vs shipped PNGs.
+   - If castle looks “fragmented”, composite fallback isn’t gating correctly → check `CASTLE_REQUIRED_PART_IDS` vs shipped structural assets.
 3. Verify barracks appears:
-   - Main should render from `barracks_lvl10/barracks_lvl10_main.png`
+   - Main should render from `main_building` via the asset resolver.
    - Shared props only layer after being wired into the composition and resolver.
+
+---
+
+## Current Development State
+
+### Backend
+- ✅ Authentication
+- ✅ Dashboard
+- ✅ City Constructor
+- ✅ Persistent Building Layout (placements saved in DB)
+- ✅ Coordinate API (plots/field from `backend/src/capital-city/build-field.config.ts`)
+
+### Frontend
+- ✅ City Scene (`frontend/src/features/capital-city/components/city-scene.tsx`)
+- ✅ Composition Renderer (parts + composite fallback)
+- ✅ Asset Resolver (`frontend/src/features/capital-city/config/city-assets.config.ts`)
+- ✅ Composite Fallback gating rule (`compositionUsesCompositeFallback()` + `CASTLE_REQUIRED_PART_IDS`)
+
+### Assets (status by Lego-kit part ids)
+
+Castle (`castle` Lego kit)
+- ✅ composite fallback sprite (building-level `castle/lvl01`)
+- ✅ `main_keep`
+- ⏳ `gate`
+- ⏳ `watch_tower`
+- ⏳ `wall_straight`
+- ⏳ `wall_corner`
+- ✅ `bridge`
+- ✅ `inner_courtyard`
+- ✅ `main_stairs`
+- ✅ `banner`
+- ✅ `flagpole`
+- ✅ `torch_gate` / `torch_tower` / `torch_keep`
+- ✅ `fountain` *(only appears if the composition includes it)*
+
+Barracks (`barracks` Lego kit)
+- ✅ `main_building` (tier 10 art shipped)
+- ✅ `gate`
+- ⏳ `training_dummy`
+- ⏳ `weapon_rack`
+- ⏳ `banner` (shared prop chain)
+- ⏳ `torch`
+- ⏳ `fence`
+
+### Gameplay
+- ✅ Login
+- ✅ Player Creation
+- ✅ Persistent City
+- ✅ City Scene
+- ✅ Building Composition
+- ⏳ Building Upgrade
+- ⏳ Resource Production
+- ⏳ Construction Queue
+- ⏳ WebSocket Updates
+- ⏳ Army
+- ⏳ Map
+- ⏳ Combat
+
+---
+
+## Current Sprint
+
+Goal
+Finish modular capital city based on Lego composition.
+
+Deliverables
+- ✅ Castle composition
+- ✅ Barracks composition
+- ⏳ Shared Props
+- ⏳ Asset Resolver
+- ⏳ Final Layering
+
+Definition of Done
+All buildings render without composite fallback when structural assets are available.
+
+Current Sprint:
+**Phase 5 — Modular Capital City**
+
+---
+
+## Architecture Rules
+- Backend owns all coordinates (plots, castle position/scale).
+- Frontend never remaps coordinates.
+- All asset URLs are resolved only through `frontend/src/features/capital-city/config/city-assets.config.ts`.
+- Building compositions use part ids only (no filename dependencies).
+- No hardcoded asset paths outside the Asset Resolver.
+- Composite fallback is temporary and is removed automatically when required structural part ids have shipped assets.
+
+---
+
+## Next Planned Phase
+
+### Phase 6 — Interactive Capital City
+- Building Selection
+- Building Info Panel
+- Upgrade Button
+- Construction Timer
+- Queue Visualization
+- Resource Updates
+
+### Phase 7 — World Map
+- World Navigation
+- Tile Ownership
+- Army Movement
+- Capture
+
+### Phase 8 — UX Polish
+- Overlays
+- Camera
+- Focus
+- Premium Effects
+
 

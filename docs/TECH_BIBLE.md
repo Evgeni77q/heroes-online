@@ -190,3 +190,15 @@ For every sprint / merged feature:
 4. Verification
    - confirm Definition of Done and update docs only when needed to keep SSOT consistent
 
+### Mandatory Sprint Review (technical, not ceremonial)
+Every sprint must end with a Sprint Review. A sprint is **not complete** unless all checklist items pass:
+
+1. All Definition of Done items are completed.
+2. Demo Scenario passes without manual fixes/workarounds.
+3. No known blocking bugs remain.
+4. Documentation is current and consistent with the code.
+5. Technical debt introduced by the sprint is explicitly recorded (if any).
+6. The next sprint can begin without additional preparatory cleanup work.
+
+If any one of these fails, the sprint remains open.
+

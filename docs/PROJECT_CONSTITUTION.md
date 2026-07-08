@@ -43,11 +43,14 @@ Any deviation from these rules is allowed **only** as a conscious architectural 
 1. Small pull requests: each PR delivers **exactly one finished user capability** (one end-to-end player-visible ability).
 2. No TODOs in production paths.
 3. No commented dead code.
-4. Documentation must be updated with every architectural change.
-5. Every feature must include a Definition of Done (DoD).
-6. Code must remain maintainable for 5+ years.
-7. Prefer extending existing systems over creating parallel ones.
-8. Every new gameplay mechanic must first be specified in `docs/GAME_BIBLE.md`, then in Domain Specs (`specs/` or an ADR-equivalent), and only then implemented in code.
+4. No Documentation Without Code. No Code Without Documentation.
+5. If architecture changes, documentation must be updated in the **same PR**.
+6. If a new user capability is implemented, it must already be described in the relevant docs before or as part of implementation.
+7. If a PR does not require documentation changes, that must be an intentional case (for example: `refactor`, `fix`, or pure `performance` work).
+8. Every feature must include a Definition of Done (DoD).
+9. Code must remain maintainable for 5+ years.
+10. Prefer extending existing systems over creating parallel ones.
+11. Every new gameplay mechanic must first be specified in `docs/GAME_BIBLE.md`, then in Domain Specs (`specs/` or an ADR-equivalent), and only then implemented in code.
 
 ### PR Classification Convention (Recommended)
 When opening a PR, set/label it by type for faster review and automation:

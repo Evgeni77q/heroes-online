@@ -263,4 +263,16 @@ Current Sprint:
 - Focus
 - Premium Effects
 
+---
+
+## AI Working Agreement
+Every AI agent (in this repository) must:
+1. Read `docs/PROJECT_MASTER_CONTEXT.md` first.
+2. Respect `docs/PROJECT_CONSTITUTION.md` (Non‑Negotiable Development Convention).
+3. Never bypass the asset resolver (extend the resolver instead).
+4. Never duplicate business logic in UI; extend the backend domain first.
+5. Never invent architecture inconsistent with the SSOT described in the docs.
+6. Prefer extending existing systems over creating parallel ones.
+7. Update documentation when architecture changes (SSOT + current sprint + affected rules).
+
 

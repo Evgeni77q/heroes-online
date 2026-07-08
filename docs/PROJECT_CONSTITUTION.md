@@ -40,7 +40,7 @@ Any deviation from these rules is allowed **only** as a conscious architectural 
 5. Latency should be hidden whenever possible (optimistic UI when safe).
 
 ## VI. Engineering Principles
-1. Small pull requests (one feature per PR).
+1. Small pull requests: each PR delivers **exactly one finished user capability** (one end-to-end player-visible ability).
 2. No TODOs in production paths.
 3. No commented dead code.
 4. Documentation must be updated with every architectural change.
@@ -58,4 +58,14 @@ Any deviation from these rules is allowed **only** as a conscious architectural 
   - Why it is safe/beneficial
   - How the deviation will be unwound or contained
 - Prefer “architecture adapter layers” over “workarounds in the UI”.
+
+### SSOT Stability Rule
+These documents are considered **fundamental SSOT**:
+- `docs/PROJECT_MASTER_CONTEXT.md`
+- `docs/PROJECT_CONSTITUTION.md`
+- `docs/GAME_BIBLE.md`
+- `docs/TECH_BIBLE.md`
+
+They must be changed **only** when architecture/vision genuinely changes.
+If a PR does not require a real change in those documents, do not update them.
 

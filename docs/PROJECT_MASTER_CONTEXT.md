@@ -214,7 +214,8 @@ Barracks (`barracks` Lego kit)
 ## Current Sprint
 
 Goal
-Finish modular capital city based on Lego composition.
+Get a city that feels like a modern RTS: modular, readable, premium.
+Make the capital city look “alive” and strategically designed (not a single static image).
 
 Deliverables
 - ✅ Castle composition
@@ -224,7 +225,12 @@ Deliverables
 - ⏳ Final Layering
 
 Definition of Done
-All buildings render without composite fallback when structural assets are available.
+Definition of Done (Phase 5)
+- ✅ All buildings render through `Composition` (no “scene PNGs” for buildings that should be modular)
+- ✅ No hardcoded coordinates in the frontend scene (frontend consumes constructor/field coordinates only)
+- ✅ `Asset Resolver` is the single point of access to asset URLs for city visuals
+- ✅ Visual layers (z-index + overlaps) render correctly in view and edit modes
+- ✅ Adding a new building requires only adding a new composition (part ids) + asset resolver entries (no copy/paste PNG hacks)
 
 Current Sprint:
 **Phase 5 — Modular Capital City**
@@ -243,25 +249,46 @@ Current Sprint:
 
 ## Next Planned Phase
 
-### Phase 6 — Interactive Capital City
-- Building Selection
-- Building Info Panel
-- Upgrade Button
-- Construction Timer
-- Queue Visualization
-- Resource Updates
+### Phase 6 — Interactive City
+Goal: turn the scene into the first gameplay loop (it is “game”, not just a beautiful layout).
 
-### Phase 7 — World Map
-- World Navigation
-- Tile Ownership
-- Army Movement
-- Capture
+Player can:
+- Select a building
+- See building information
+- Start an upgrade
+- Observe a construction timer
+- Receive real-time updates
+- See the building appearance change after upgrade
 
-### Phase 8 — UX Polish
-- Overlays
-- Camera
-- Focus
-- Premium Effects
+Definition of Done:
+The first end-to-end upgrade cycle works for at least one primary building type (e.g. Barracks), with server-side completion + realtime UI updates + final visual layer update.
+
+### Phase 7 — Living World
+Goal: the first big leap that differentiates us from a “pure city builder”.
+
+Features:
+- World map
+- Army movement
+- Territory ownership
+- Resource extraction
+- World exploration
+
+Definition of Done:
+The world integration loop is functional: army can traverse, territories can be owned, resources can be produced from owned areas, and exploration unlocks new world state.
+
+### Phase 8 — MMO Layer
+Goal: multiplayer social systems that create cooperation and conflict.
+
+Features:
+- Alliances
+- Diplomacy
+- Trade
+- PvP
+- World events
+- Shared goals
+
+Definition of Done:
+At least one complete social flow works end-to-end (e.g. alliance formation + shared action + realtime state updates), with gameplay impact.
 
 ---
 

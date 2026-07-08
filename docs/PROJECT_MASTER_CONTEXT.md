@@ -8,6 +8,18 @@ Heroes Online — an MMO city constructor with:
 - A visual “Lego kit” composition system for large buildings (castle, barracks)
 - Phase 8 UX polish (overlays, focus, premium pass)
 
+## Project Principles
+1. Never clone Heroes at War.
+2. Every system must improve upon the genre standard.
+3. Backend is the single source of truth.
+4. Frontend is fully data-driven.
+5. Every building is modular.
+6. Every visual upgrade should be reflected in gameplay.
+7. No placeholder architecture.
+8. Premium quality over development speed.
+9. Every feature must be production-ready.
+10. Code must be maintainable for 5+ years.
+
 ## Run the game locally
 Frontend (Next.js): `http://localhost:3000/city`
 - Start: `cd frontend && npm run dev`
